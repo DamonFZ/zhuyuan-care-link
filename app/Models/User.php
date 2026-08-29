@@ -46,6 +46,11 @@ class User extends Authenticatable implements FilamentUser
             ->logFillable()
             ->logOnlyDirty();
     }
+    public function pointTransactions(): HasMany
+    {
+        return $this->hasMany(PointTransaction::class);
+    }
+
     public function recyclingOrders(): HasMany
     {
         return $this->hasMany(RecyclingOrder::class);
