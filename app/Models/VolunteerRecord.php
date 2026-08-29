@@ -19,6 +19,8 @@ class VolunteerRecord extends Model
         "base_hours",
         "multiplier",
         "final_hours",
+        "volunteer_service_type_id",
+        "reward_points",
     ];
 
     protected $casts = [
@@ -35,5 +37,10 @@ class VolunteerRecord extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function volunteerServiceType(): BelongsTo
+    {
+        return $this->belongsTo(VolunteerServiceType::class);
     }
 }
