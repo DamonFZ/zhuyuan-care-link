@@ -5,6 +5,7 @@ namespace App\Models;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -13,42 +14,38 @@ class User extends Authenticatable implements FilamentUser
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'openid',
-        'points',
-        'volunteer_hours',
-        'is_captain',
+        "name",
+        "email",
+        "password",
+        "openid",
+        "session_key",
+        "points",
+        "volunteer_hours",
+        "is_captain",
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
-        'password',
-        'remember_token',
+        "password",
+        "remember_token",
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-        'points' => 'decimal:2',
-        'is_captain' => 'boolean',
+        "email_verified_at" => "datetime",
+        "password" => "hashed",
+        "points" => "decimal:2",
+        "is_captain" => "boolean",
     ];
+
+    public function recyclingOrders(): HasMany
+    {
+        return $this->hasMany(RecyclingOrder::class);
+    }
+
+    public function volunteerRecords(): HasMany
+    {
+        return $this->hasMany(VolunteerRecord::class);
+    }
 
     public function canAccessPanel(Panel $panel): bool
     {
