@@ -57,8 +57,23 @@ class UserResource extends Resource
                             ->label('志愿时长(小时)')
                             ->numeric()
                             ->rules(['integer', 'min:0']),
-                        Forms\Components\Toggle::make('is_captain')
-                            ->label('网格队长'),
+                        Forms\Components\Select::make('volunteer_level_id')
+                            ->label('志愿者等级')
+                            ->relationship('volunteerLevel', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')
+                                    ->label('等级名称')
+                                    ->required()
+                                    ->unique('volunteer_levels', 'name'),
+                                Forms\Components\TextInput::make('multiplier')
+                                    ->label('加成系数')
+                                    ->numeric()
+                                    ->default('1.00')
+                                    ->required(),
+                            ]),
                     ])->columns(3),
                 Forms\Components\Section::make('账号安全')
                     ->schema([
@@ -91,9 +106,15 @@ class UserResource extends Resource
                     ->label('志愿时长')
                     ->suffix(' 小时')
                     ->sortable(),
-                Tables\Columns\IconColumn::make('is_captain')
-                    ->label('网格队长')
-                    ->boolean(),
+                Tables\Columns\TextColumn::make('volunteerLevel.name')
+                    ->label('志愿者等级')
+                    ->badge()
+                    ->color(fn ($state) => match ($state) {
+                        '网格队长' => 'warning',
+                        '骨干志愿者' => 'info',
+                        default => 'gray',
+                    })
+                    ->placeholder('未设置'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('注册时间')
                     ->dateTime()
@@ -101,8 +122,11 @@ class UserResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\TernaryFilter::make('is_captain')
-                    ->label('网格队长'),
+                Tables\Filters\SelectFilter::make('volunteer_level_id')
+                    ->label('志愿者等级')
+                    ->relationship('volunteerLevel', 'name')
+                    ->searchable()
+                    ->preload(),
                 Tables\Filters\Filter::make('has_points')
                     ->label('有消费金')
                     ->query(fn (Builder $query): Builder => $query->where('points', '>', 0)),

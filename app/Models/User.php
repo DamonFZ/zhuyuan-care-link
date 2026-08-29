@@ -5,13 +5,12 @@ namespace App\Models;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
-
-
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 class User extends Authenticatable implements FilamentUser
@@ -26,7 +25,7 @@ class User extends Authenticatable implements FilamentUser
         "session_key",
         "points",
         "volunteer_hours",
-        "is_captain",
+        "volunteer_level_id",
     ];
 
     protected $hidden = [
@@ -38,7 +37,6 @@ class User extends Authenticatable implements FilamentUser
         "email_verified_at" => "datetime",
         "password" => "hashed",
         "points" => "decimal:2",
-        "is_captain" => "boolean",
     ];
 
     public function getActivitylogOptions(): LogOptions
@@ -47,6 +45,12 @@ class User extends Authenticatable implements FilamentUser
             ->logFillable()
             ->logOnlyDirty();
     }
+
+    public function volunteerLevel(): BelongsTo
+    {
+        return $this->belongsTo(VolunteerLevel::class);
+    }
+
     public function pointTransactions(): HasMany
     {
         return $this->hasMany(PointTransaction::class);
