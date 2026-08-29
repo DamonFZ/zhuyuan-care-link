@@ -6,6 +6,8 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use App\Models\RecyclingOrder;
+use App\Models\VolunteerRecord;
+use App\Observers\VolunteerRecordObserver;
 use App\Observers\RecyclingOrderObserver;
 use Illuminate\Support\Facades\Event;
 
@@ -28,6 +30,7 @@ class EventServiceProvider extends ServiceProvider
     public function boot(): void
     {
         RecyclingOrder::observe(RecyclingOrderObserver::class);
+        VolunteerRecord::observe(VolunteerRecordObserver::class);
     }
 
     /**

@@ -3,10 +3,12 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\VolunteerRecordResource\Pages;
-use App\Models\Setting;
 use App\Models\VolunteerRecord;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -33,7 +35,24 @@ class VolunteerRecordResource extends Resource
                             ->label("用户")
                             ->relationship("user", "name")
                             ->searchable()
-                            ->required(),
+                            ->preload()
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(function (Set $set, Get $get, $state): void {
+                                if (blank($state)) {
+                                    $set("multiplier", "1.00");
+                                    $set("final_hours", null);
+                                    return;
+                                }
+                                // 按用户真实等级取系数（前端联动，后端 Observer 会再严格兜底）
+                                $user = User::with("volunteerLevel")->find($state);
+                                $mult = $user?->volunteerLevel?->multiplier ?? "1.00";
+                                $set("multiplier", (string)$mult);
+                                $base = $get("base_hours");
+                                if (filled($base)) {
+                                    $set("final_hours", number_format(round((float)$base * (float)$mult, 1), 1, ".", ""));
+                                }
+                            }),
                         Forms\Components\TextInput::make("title")
                             ->label("服务项目")
                             ->required()
@@ -42,44 +61,30 @@ class VolunteerRecordResource extends Resource
                             ->label("基础时长(小时)")
                             ->numeric()
                             ->required()
-                            ->live(debounce: 500)
-                            ->afterStateUpdated(function ($set, $state, $get) {
-                                if ($state !== null && $get("multiplier")) {
-                                    $set("final_hours", round($state * $get("multiplier"), 1));
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function (Set $set, Get $get, $state): void {
+                                if (blank($state)) {
+                                    $set("final_hours", null);
+                                    return;
                                 }
+                                $mult = (string)($get("multiplier") ?? "1.00");
+                                $set("final_hours", number_format(round((float)$state * (float)$mult, 1), 1, ".", ""));
                             }),
-                        Forms\Components\Select::make("multiplier")
-                            ->label("加成系数")
-                            ->options(function () {
-                                // 从 settings 表动态读取系数配置
-                                $rows = Setting::where("key", "like", "volunteer_multiplier_%")
-                                    ->pluck("name", "value")
-                                    ->map(function ($name, $value) {
-                                        return $name . " (" . $value . "x)";
-                                    })
-                                    ->toArray();
-                                // 如果没有配置，回退默认值
-                                if (empty($rows)) {
-                                    return [
-                                        "1.0" => "普通志愿者 (1.0x)",
-                                        "1.2" => "骨干志愿者 (1.2x)",
-                                        "1.5" => "网格队长 (1.5x)",
-                                    ];
-                                }
-                                return $rows;
-                            })
-                            ->default("1.0")
-                            ->required()
-                            ->afterStateUpdated(function ($set, $state, $get) {
-                                if ($get("base_hours") !== null) {
-                                    $set("final_hours", round($get("base_hours") * (float)$state, 1));
-                                }
-                            }),
+                        Forms\Components\TextInput::make("multiplier")
+                            ->label("加成系数（跟随用户等级）")
+                            ->numeric()
+                            ->inputMode("decimal")
+                            ->disabled()
+                            ->dehydrated(true)
+                            ->suffix("x")
+                            ->helperText("根据所选用户的志愿者等级自动带入，不可手动修改"),
                         Forms\Components\TextInput::make("final_hours")
                             ->label("最终时长(小时)")
                             ->numeric()
                             ->inputMode("decimal")
-                            ->helperText("按基础时长 x 加成系数自动计算，可手动修改"),
+                            ->disabled()
+                            ->dehydrated(true)
+                            ->helperText("= 基础时长 × 加成系数（后端会严格按用户真实等级再核算一次入库）"),
                     ])->columns(2),
             ]);
     }
