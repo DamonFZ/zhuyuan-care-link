@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\VolunteerRecordResource\Pages;
 use App\Models\VolunteerRecord;
+use App\Models\VolunteerServiceType;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -25,6 +26,34 @@ class VolunteerRecordResource extends Resource
 
     protected static ?string $pluralModelLabel = "志愿服务";
 
+    /**
+     * 统一的计算函数（前端侧）：
+     * - final_hours = base_hours × multiplier
+     * - reward_points = base_hours × base_reward_rate × multiplier
+     */
+    public static function recompute(Set $set, Get $get): void
+    {
+        $base = (float)($get("base_hours") ?? 0);
+        $mult = (float)($get("multiplier") ?? 1.00);
+        $rate = (float)($get("_rate") ?? ($get("volunteer_service_type_id")
+            ? (VolunteerServiceType::find($get("volunteer_service_type_id"))?->base_reward_rate ?? 0)
+            : 0));
+
+        if ($base > 0 && $mult > 0) {
+            $finalH = number_format(round($base * $mult, 1), 1, ".", "");
+            $set("final_hours", $finalH);
+        } else {
+            $set("final_hours", null);
+        }
+
+        if ($base > 0 && $mult > 0 && $rate > 0) {
+            $reward = number_format(round($base * $rate * $mult, 2), 2, ".", "");
+            $set("reward_points", $reward);
+        } else {
+            $set("reward_points", "0.00");
+        }
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -42,16 +71,28 @@ class VolunteerRecordResource extends Resource
                                 if (blank($state)) {
                                     $set("multiplier", "1.00");
                                     $set("final_hours", null);
+                                    $set("reward_points", "0.00");
                                     return;
                                 }
-                                // 按用户真实等级取系数（前端联动，后端 Observer 会再严格兜底）
                                 $user = User::with("volunteerLevel")->find($state);
-                                $mult = $user?->volunteerLevel?->multiplier ?? "1.00";
-                                $set("multiplier", (string)$mult);
-                                $base = $get("base_hours");
-                                if (filled($base)) {
-                                    $set("final_hours", number_format(round((float)$base * (float)$mult, 1), 1, ".", ""));
+                                $mult = (string)($user?->volunteerLevel?->multiplier ?? "1.00");
+                                $set("multiplier", $mult);
+                                static::recompute($set, $get);
+                            }),
+                        Forms\Components\Select::make("volunteer_service_type_id")
+                            ->label("服务岗位类型")
+                            ->relationship("volunteerServiceType", "name")
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(function (Set $set, Get $get, $state): void {
+                                if (filled($state)) {
+                                    $type = VolunteerServiceType::find($state);
+                                    // 把 rate 写入隐藏只读态，供 recompute 直接使用
+                                    $set("_rate", (string)($type?->base_reward_rate ?? "0"));
                                 }
+                                static::recompute($set, $get);
                             }),
                         Forms\Components\TextInput::make("title")
                             ->label("服务项目")
@@ -65,10 +106,10 @@ class VolunteerRecordResource extends Resource
                             ->afterStateUpdated(function (Set $set, Get $get, $state): void {
                                 if (blank($state)) {
                                     $set("final_hours", null);
+                                    $set("reward_points", "0.00");
                                     return;
                                 }
-                                $mult = (string)($get("multiplier") ?? "1.00");
-                                $set("final_hours", number_format(round((float)$state * (float)$mult, 1), 1, ".", ""));
+                                static::recompute($set, $get);
                             }),
                         Forms\Components\TextInput::make("multiplier")
                             ->label("加成系数（跟随用户等级）")
@@ -84,7 +125,15 @@ class VolunteerRecordResource extends Resource
                             ->inputMode("decimal")
                             ->disabled()
                             ->dehydrated(true)
-                            ->helperText("= 基础时长 × 加成系数（后端会严格按用户真实等级再核算一次入库）"),
+                            ->helperText("= 基础时长 × 加成系数；后端严格重算兜底入库"),
+                        Forms\Components\TextInput::make("reward_points")
+                            ->label("本次消费金奖励(元)")
+                            ->numeric()
+                            ->inputMode("decimal")
+                            ->disabled()
+                            ->dehydrated(true)
+                            ->prefix("¥")
+                            ->helperText("= 基础时长 × 岗位时薪 × 加成系数；后端严格重算兜底入库"),
                     ])->columns(2),
             ]);
     }
@@ -100,6 +149,10 @@ class VolunteerRecordResource extends Resource
                     ->label("用户")
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make("volunteerServiceType.name")
+                    ->label("岗位")
+                    ->badge()
+                    ->placeholder("未设置"),
                 Tables\Columns\TextColumn::make("title")
                     ->label("服务项目")
                     ->searchable(),
@@ -119,6 +172,11 @@ class VolunteerRecordResource extends Resource
                 Tables\Columns\TextColumn::make("final_hours")
                     ->label("最终时长")
                     ->numeric(1)
+                    ->sortable(),
+                Tables\Columns\TextColumn::make("reward_points")
+                    ->label("消费金奖励")
+                    ->money("CNY")
+                    ->color("success")
                     ->sortable(),
                 Tables\Columns\TextColumn::make("created_at")
                     ->label("服务时间")
