@@ -14,7 +14,7 @@ class RecyclingOrderResource extends Resource
 {
     protected static ?string $model = RecyclingOrder::class;
 
-    protected static ?string $navigationIcon = "heroicon-o-recycle";
+    protected static ?string $navigationIcon = "heroicon-o-arrow-path";
 
     protected static ?string $navigationLabel = "旧衣回收";
 
