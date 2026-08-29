@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\VolunteerRecordResource\Pages;
+use App\Models\Setting;
 use App\Models\VolunteerRecord;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -49,11 +50,24 @@ class VolunteerRecordResource extends Resource
                             }),
                         Forms\Components\Select::make("multiplier")
                             ->label("加成系数")
-                            ->options([
-                                "1.0" => "普通 (1.0x)",
-                                "1.2" => "骨干 (1.2x)",
-                                "1.5" => "队长 (1.5x)",
-                            ])
+                            ->options(function () {
+                                // 从 settings 表动态读取系数配置
+                                $rows = Setting::where("key", "like", "volunteer_multiplier_%")
+                                    ->pluck("name", "value")
+                                    ->map(function ($name, $value) {
+                                        return $name . " (" . $value . "x)";
+                                    })
+                                    ->toArray();
+                                // 如果没有配置，回退默认值
+                                if (empty($rows)) {
+                                    return [
+                                        "1.0" => "普通志愿者 (1.0x)",
+                                        "1.2" => "骨干志愿者 (1.2x)",
+                                        "1.5" => "网格队长 (1.5x)",
+                                    ];
+                                }
+                                return $rows;
+                            })
                             ->default("1.0")
                             ->required()
                             ->afterStateUpdated(function ($set, $state, $get) {
