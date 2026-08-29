@@ -46,5 +46,13 @@ class DatabaseSeeder extends Seeder
                 "value" => "1.5",
             ],
         ], ["key"], ["name", "value"]);
+        // 志愿服务岗位类型（幂等 upsert）
+        DB::table("volunteer_service_types")->upsert([
+            ["id" => 1, "name" => "引导宣传",   "base_reward_rate" => "1.00"],
+            ["id" => 2, "name" => "秩序维护",   "base_reward_rate" => "1.00"],
+            ["id" => 3, "name" => "衣物分拣",   "base_reward_rate" => "1.20"],
+            ["id" => 4, "name" => "上门回收",   "base_reward_rate" => "1.20"],
+            ["id" => 5, "name" => "协助搬运",   "base_reward_rate" => "1.20"],
+        ], ["id"], ["name", "base_reward_rate"]);
     }
 }
