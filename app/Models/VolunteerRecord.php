@@ -21,6 +21,7 @@ class VolunteerRecord extends Model
         "final_hours",
         "volunteer_service_type_id",
         "reward_points",
+        "status",
     ];
 
     protected $casts = [
