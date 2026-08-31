@@ -1,0 +1,6 @@
+<view class="placeholder-page">
+  <view class="ph-emoji">💸</view>
+  <view class="ph-title">居民消费金模块</view>
+  <view class="ph-desc">Coming Soon — 消费金获取/流水/核销商户兑换记录将在此展示。</view>
+  <button class="btn" bindtap="onBack">← 返回首页</button>
+</view>

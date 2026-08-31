@@ -1,8 +1,16 @@
 <view class="page">
-  <!-- 顶部绿色横幅 Hero（白字高对比度） -->
-  <view class="hero">
-    <view class="hero-title">竹苑益家人 · CareLink</view>
-    <view class="hero-sub">让社区更有温度 · 邻里互助消费金</view>
+  <!-- 顶部绿色横幅 Hero（含头像） -->
+  <view class="hero hero-profile">
+    <image
+      class="hero-avatar"
+      src="{{avatarUrl || '/assets/icons/user-active.png'}}"
+      mode="aspectFill"
+      bindtap="onEditProfile"
+    ></image>
+    <view class="hero-text">
+      <view class="hero-title">{{userInfo.name || '微信用户'}}</view>
+      <view class="hero-sub">{{roleText}} · {{volunteerLevelName}}</view>
+    </view>
   </view>
 
   <view wx:if="{{!loginReady}}" class="card card-loading">
@@ -17,7 +25,7 @@
 
   <!-- 登录成功：Dashboard -->
   <block wx:else>
-    <!-- 消费金资产卡（重点强调：金额=primary-color；图标=primary-color） -->
+    <!-- 消费金资产卡 -->
     <view class="card" style="border: 2rpx solid var(--primary-color); box-shadow: 0 8rpx 28rpx rgba(125,214,26,0.16);">
       <view class="row" style="border-bottom: none; padding: 0 0 8rpx;">
         <text class="k" style="font-size: 28rpx; font-weight: 600;">💰 消费金余额</text>
@@ -46,6 +54,27 @@
       <view class="row" style="border-bottom: none;">
         <text class="k">⏱ 累计时长</text>
         <text class="v">{{userInfo.volunteer_hours || '0.0'}} 小时</text>
+      </view>
+    </view>
+
+    <!-- 菜单列表：编辑个人信息等 -->
+    <view class="menu-card">
+      <view class="menu-item" bindtap="onEditProfile" hover-class="menu-item-hover">
+        <view class="menu-icon">✏️</view>
+        <view class="menu-label">编辑个人信息</view>
+        <view class="menu-arrow">›</view>
+      </view>
+
+      <view class="menu-item" bindtap="onPointsTap" hover-class="menu-item-hover">
+        <view class="menu-icon">💳</view>
+        <view class="menu-label">消费金流水</view>
+        <view class="menu-arrow">›</view>
+      </view>
+
+      <view class="menu-item" bindtap="onLogout" hover-class="menu-item-hover">
+        <view class="menu-icon">🚪</view>
+        <view class="menu-label">退出登录</view>
+        <view class="menu-arrow">›</view>
       </view>
     </view>
   </block>

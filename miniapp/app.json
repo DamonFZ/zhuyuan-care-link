@@ -1,12 +1,35 @@
 {
   "pages": [
-    "pages/index/index"
+    "pages/home/index",
+    "pages/user/index",
+    "pages/points/index",
+    "pages/user/edit"
   ],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#7dd61a",
     "navigationBarTitleText": "竹苑益家人",
     "navigationBarTextStyle": "white"
+  },
+  "tabBar": {
+    "color": "#9ca3af",
+    "selectedColor": "#7dd61a",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页",
+        "iconPath": "assets/icons/home.png",
+        "selectedIconPath": "assets/icons/home-active.png"
+      },
+      {
+        "pagePath": "pages/user/index",
+        "text": "我的",
+        "iconPath": "assets/icons/user.png",
+        "selectedIconPath": "assets/icons/user-active.png"
+      }
+    ]
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json"

@@ -1,0 +1,112 @@
+/* pages/user/edit.wxss */
+.edit-page {
+  padding: 32rpx;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* 头像区 */
+.avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx 0 24rpx;
+}
+.avatar-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: transparent;
+  padding: 0;
+  border: none;
+  line-height: normal;
+}
+.avatar-btn::after { border: none; }
+
+.avatar-img {
+  width: 180rpx;
+  height: 180rpx;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 6rpx solid #ffffff;
+  box-shadow: 0 8rpx 24rpx rgba(125, 214, 26, 0.18);
+  margin-bottom: 16rpx;
+}
+.avatar-tip {
+  font-size: 26rpx;
+  color: var(--primary-color);
+  font-weight: 600;
+  padding: 8rpx 24rpx;
+  background: var(--primary-light);
+  border-radius: 999rpx;
+}
+.avatar-loading {
+  margin-top: 16rpx;
+  color: var(--primary-color);
+  font-size: 26rpx;
+}
+
+/* 字段卡片 */
+.card {
+  margin-top: 28rpx;
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 28rpx 32rpx 32rpx;
+  border: 1rpx solid var(--primary-light);
+  box-shadow: 0 4rpx 20rpx rgba(125, 214, 26, 0.05);
+}
+.label-title {
+  font-size: 28rpx;
+  color: #365314;
+  font-weight: 700;
+  margin-bottom: 18rpx;
+}
+
+.field { width: 100%; }
+
+.input {
+  width: 100%;
+  background: #f6faf0;
+  border-radius: 16rpx;
+  padding: 24rpx 24rpx;
+  font-size: 30rpx;
+  color: #1f2937;
+  box-sizing: border-box;
+  border: 1rpx solid transparent;
+}
+.input:focus {
+  border: 1rpx solid var(--primary-color);
+  background: #fff;
+}
+.input-placeholder {
+  color: #9ca3af;
+  font-size: 28rpx;
+}
+
+.hint {
+  margin-top: 16rpx;
+  font-size: 24rpx;
+  color: #6b7280;
+  line-height: 1.7;
+}
+
+/* 保存按钮 */
+.btn-save {
+  margin-top: 64rpx;
+  width: 100%;
+  min-height: 96rpx;
+  line-height: 96rpx;
+  border-radius: 999rpx;
+  background: var(--primary-color);
+  color: #ffffff !important;
+  font-size: 32rpx;
+  font-weight: 700;
+  letter-spacing: 4rpx;
+  box-shadow: 0 10rpx 26rpx rgba(125, 214, 26, 0.3);
+  border: none;
+}
+.btn-save[disabled] {
+  opacity: 0.55;
+  color: #fff !important;
+}
+.btn-save::after { border: none; }

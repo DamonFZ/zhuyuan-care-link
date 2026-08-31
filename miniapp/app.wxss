@@ -21,7 +21,7 @@ page {
 
 .page {
   min-height: 100vh;
-  padding: 32rpx;
+  padding: 0 32rpx 32rpx 32rpx;
   box-sizing: border-box;
 }
 

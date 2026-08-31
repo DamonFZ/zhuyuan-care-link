@@ -1,0 +1,27 @@
+.placeholder-page {
+  padding: 80rpx 48rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.ph-emoji {
+  font-size: 120rpx;
+  margin-bottom: 24rpx;
+}
+.ph-title {
+  font-size: 36rpx;
+  color: var(--primary-color);
+  font-weight: 800;
+  margin-bottom: 16rpx;
+}
+.ph-desc {
+  font-size: 26rpx;
+  color: #6b7280;
+  line-height: 1.7;
+  margin-bottom: 48rpx;
+  padding: 0 16rpx;
+}
+.btn {
+  min-width: 320rpx;
+}

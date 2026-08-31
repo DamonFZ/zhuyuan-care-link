@@ -23,6 +23,7 @@ class User extends Authenticatable implements FilamentUser
         "password",
         "openid",
         "session_key",
+        "avatar",
         "points",
         "volunteer_hours",
         "volunteer_level_id",

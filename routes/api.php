@@ -1,32 +1,36 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\HomeController;
+use App\Http\Controllers\Api\UploadController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// Public routes
-Route::post("/wechat/login", [AuthController::class, "wechatLogin"]);
+/*
+|--------------------------------------------------------------------------
+| API Routes (前缀 /api)
+|--------------------------------------------------------------------------
+*/
 
-// Protected routes
+// ===== 公开路由（无需鉴权）=====
+Route::post("/wechat/login", [AuthController::class, "wechatLogin"]);
+Route::get("/slides",       [HomeController::class, "getSlides"]);
+
+
+// ===== Sanctum 受保护路由 =====
 Route::middleware("auth:sanctum")->group(function () {
+
     Route::get("/user", function (Request $request) {
         return $request->user();
     });
 
-    Route::get("/user/profile", function (Request $request) {
-        $user = $request->user();
-        return response()->json([
-            "code" => 200,
-            "message" => "success",
-            "data" => [
-                "id" => $user->id,
-                "name" => $user->name,
-                "openid" => $user->openid,
-                "points" => $user->points,
-                "volunteer_hours" => $user->volunteer_hours,
-                "is_captain" => $user->is_captain,
-                "created_at" => $user->created_at,
-            ],
-        ]);
-    });
+    // 头像上传：返回 { url }
+    Route::post('/upload',       [UploadController::class, 'uploadImage']);
+
+    // 个人资料（name + avatar）更新
+    Route::post('/user/profile', [UserController::class, 'updateProfile']);
+
+    // 个人资料查询（结构化返回，含等级/头像）
+    Route::get("/user/profile",  [UserController::class, 'getProfile']);
 });

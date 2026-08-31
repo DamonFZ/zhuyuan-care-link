@@ -1,0 +1,50 @@
+<view class="edit-page">
+
+  <!-- 头像上传（微信隐私合规：button open-type="chooseAvatar"） -->
+  <view class="avatar-section">
+    <view class="label-title">个人头像</view>
+    <button
+      class="avatar-btn"
+      open-type="chooseAvatar"
+      bind:chooseavatar="onChooseAvatar"
+    >
+      <image
+        class="avatar-img"
+        src="{{avatarUrl || '/assets/icons/user-active.png'}}"
+        mode="aspectFill"
+      />
+      <view class="avatar-tip">点击更换头像</view>
+    </button>
+    <view wx:if="{{uploading}}" class="avatar-loading">📤 上传中…</view>
+  </view>
+
+  <!-- 昵称输入（微信隐私合规：type="nickname"） -->
+  <view class="card">
+    <view class="field">
+      <view class="label-title">昵称 / 姓名</view>
+      <input
+        class="input"
+        type="nickname"
+        placeholder="请输入或获取微信昵称"
+        value="{{nickname}}"
+        bindinput="onNicknameInput"
+        bindblur="onNicknameBlur"
+        placeholder-class="input-placeholder"
+      />
+      <view class="hint">
+        📌 建议使用真实姓名，以便合作商户核销时快速核实身份。
+      </view>
+    </view>
+  </view>
+
+  <!-- 保存按钮 -->
+  <button
+    class="btn btn-save"
+    bindtap="onSave"
+    disabled="{{saving || uploading}}"
+    loading="{{saving}}"
+  >
+    {{ saving ? '保存中...' : '保存修改' }}
+  </button>
+
+</view>

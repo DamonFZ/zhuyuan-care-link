@@ -1,0 +1,85 @@
+/* ===== pages/user/index.wxss（补充全局 app.wxss 没覆盖的） ===== */
+
+/* 顶部英雄区（升级为个人中心样式：左头像+右姓名） */
+.hero-profile {
+  display: flex;
+  align-items: center;
+  padding: 48rpx 40rpx 56rpx;
+}
+.hero-avatar {
+  width: 136rpx;
+  height: 136rpx;
+  border-radius: 50%;
+  border: 4rpx solid #ffffff;
+  background: #fff;
+  box-shadow: 0 6rpx 24rpx rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+}
+.hero-text {
+  flex: 1;
+  margin-left: 28rpx;
+  min-width: 0;
+}
+.hero-text .hero-title {
+  color: #ffffff;
+  font-size: 40rpx;
+  font-weight: 700;
+  letter-spacing: 1rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hero-text .hero-sub {
+  color: #ffffff;
+  opacity: 0.9;
+  font-size: 26rpx;
+  margin-top: 8rpx;
+}
+
+/* 菜单列表 */
+.menu-card {
+  margin-top: 28rpx;
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 0 32rpx;
+  border: 1rpx solid var(--primary-light);
+  overflow: hidden;
+  box-shadow: 0 4rpx 24rpx rgba(125, 214, 26, 0.05);
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 28rpx 0;
+  border-bottom: 1rpx solid var(--primary-light);
+}
+.menu-item:last-child {
+  border-bottom: 0;
+}
+.menu-item-hover {
+  background: var(--primary-light);
+  margin: 0 -32rpx;
+  padding-left: 32rpx;
+  padding-right: 32rpx;
+}
+.menu-icon {
+  width: 56rpx;
+  height: 56rpx;
+  line-height: 56rpx;
+  text-align: center;
+  font-size: 36rpx;
+  margin-right: 20rpx;
+  background: var(--primary-light);
+  border-radius: 14rpx;
+}
+.menu-label {
+  flex: 1;
+  color: #1f2937;
+  font-size: 30rpx;
+  font-weight: 500;
+}
+.menu-arrow {
+  color: #9ca3af;
+  font-size: 44rpx;
+  line-height: 1;
+  font-weight: 300;
+}
