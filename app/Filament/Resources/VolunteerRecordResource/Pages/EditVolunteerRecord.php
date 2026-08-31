@@ -13,7 +13,7 @@ class EditVolunteerRecord extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            // ❌ 已禁用物理删除（使用列表页的冲销/撤销 Revoke 机制代替）
         ];
     }
 }

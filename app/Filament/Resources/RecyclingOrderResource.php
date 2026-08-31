@@ -124,12 +124,9 @@ class RecyclingOrderResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                // ❌ 已禁用批量物理删除（使用冲销revoke机制代替）
             ]);
     }
 
