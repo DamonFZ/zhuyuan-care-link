@@ -103,11 +103,19 @@ class RecyclingOrderResource extends Resource
                 Tables\Columns\TextColumn::make("status")
                     ->label("状态")
                     ->badge()
-                    ->color(fn ($state) => match ($state) {
-                        "pending" => "warning",
+                    ->color(fn (string $state): string => match ($state) {
+                        "pending"   => "warning",
                         "completed" => "success",
-                        "cancelled" => "danger",
-                        default => "gray",
+                        "cancelled" => "gray",
+                        "revoked"   => "danger",
+                        default     => "gray",
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        "pending"   => "待处理",
+                        "completed" => "已完成",
+                        "cancelled" => "已取消",
+                        "revoked"   => "已冲销",
+                        default     => $state,
                     }),
                 Tables\Columns\TextColumn::make("created_at")
                     ->label("创建时间")
@@ -120,10 +128,34 @@ class RecyclingOrderResource extends Resource
                     ->options(["points" => "积分", "cash" => "现金"]),
                 Tables\Filters\SelectFilter::make("status")
                     ->label("状态")
-                    ->options(["pending" => "待处理", "completed" => "已完成", "cancelled" => "已取消"]),
+                    ->options(["pending" => "待处理", "completed" => "已完成", "cancelled" => "已取消", "revoked" => "已冲销"]),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('revoke')
+                    ->label('冲销订单')
+                    ->color('danger')
+                    ->icon('heroicon-o-arrow-uturn-left')
+                    ->requiresConfirmation()
+                    ->modalHeading('确认冲销该旧衣回收订单？')
+                    ->modalDescription('冲销后：积分型订单将自动扣回已发消费金并产生负向流水；现金型订单仅标记为 revoked。此操作不可逆！')
+                    ->visible(fn ($record) => $record->status === 'completed')
+                    ->action(function ($record): void {
+                        \Illuminate\Support\Facades\DB::transaction(function () use ($record) {
+                            // 1) 积分类型：扣回消费金
+                            if ($record->reward_type === 'points'
+                                && bccomp((string)($record->reward_amount ?? 0), '0.00', 2) > 0
+                            ) {
+                                $record->user->modifyPoints(
+                                    bcmul((string)$record->reward_amount, '-1', 2),
+                                    "撤销旧衣回收订单扣回消费金：{$record->weight}斤"
+                                );
+                            }
+
+                            // 2) 标记订单为已冲销
+                            $record->update(['status' => 'revoked']);
+                        });
+                    }),
             ])
             ->bulkActions([
                 // ❌ 已禁用批量物理删除（使用冲销revoke机制代替）

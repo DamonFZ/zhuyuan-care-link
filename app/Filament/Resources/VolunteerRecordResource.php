@@ -153,6 +153,19 @@ class VolunteerRecordResource extends Resource
                     ->label("岗位")
                     ->badge()
                     ->placeholder("未设置"),
+                Tables\Columns\TextColumn::make("status")
+                    ->label("状态")
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        "completed" => "success",
+                        "revoked"   => "danger",
+                        default     => "gray",
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        "completed" => "已完成",
+                        "revoked"   => "已撤销",
+                        default     => $state,
+                    }),
                 Tables\Columns\TextColumn::make("title")
                     ->label("服务项目")
                     ->searchable(),
@@ -194,6 +207,38 @@ class VolunteerRecordResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('revoke')
+                    ->label('撤销记录')
+                    ->color('danger')
+                    ->icon('heroicon-o-arrow-uturn-left')
+                    ->requiresConfirmation()
+                    ->modalHeading('确认撤销该志愿记录？')
+                    ->modalDescription('撤销后，系统将自动扣回本记录发放的消费金，并回退总志愿时长，同时产生一条负向流水。此操作不可逆！')
+                    ->visible(fn ($record) => $record->status === 'completed')
+                    ->action(function ($record): void {
+                        \Illuminate\Support\Facades\DB::transaction(function () use ($record) {
+                            $record->update(['status' => 'revoked']);
+
+                            // 1) 扣回消费金
+                            if (bccomp((string)($record->reward_points ?? 0), '0.00', 2) > 0) {
+                                $record->user->modifyPoints(
+                                    bcmul((string)$record->reward_points, '-1', 2),
+                                    "撤销志愿记录扣回消费金：{$record->title}"
+                                );
+                            }
+
+                            // 2) 回退用户总志愿时长（使用行锁保证并发安全）
+                            if ($record->final_hours > 0) {
+                                $locked = \App\Models\User::where('id', $record->user_id)
+                                    ->lockForUpdate()->first();
+                                if ($locked) {
+                                    $newVal = bcsub($locked->volunteer_hours, (string)$record->final_hours, 1);
+                                    if (bccomp($newVal, '0', 1) < 0) $newVal = '0.0';
+                                    $locked->update(['volunteer_hours' => $newVal]);
+                                }
+                            }
+                        });
+                    }),
             ])
             ->bulkActions([
                 // ❌ 已禁用批量物理删除（使用冲销revoke机制代替）
