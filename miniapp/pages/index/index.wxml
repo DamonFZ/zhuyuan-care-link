@@ -1,11 +1,12 @@
 <view class="page">
+  <!-- 顶部绿色横幅 Hero（白字高对比度） -->
   <view class="hero">
     <view class="hero-title">竹苑益家人 · CareLink</view>
-    <view class="hero-sub">让社区更有温度</view>
+    <view class="hero-sub">让社区更有温度 · 邻里互助消费金</view>
   </view>
 
   <view wx:if="{{!loginReady}}" class="card card-loading">
-    <view>⏳ 正在用微信账号自动登录…</view>
+    <view style="color: var(--primary-color);">⏳ 正在用微信账号自动登录…</view>
   </view>
 
   <view wx:elif="{{loginError}}" class="card card-error">
@@ -14,12 +15,42 @@
     <button class="btn" bindtap="onRetryLogin">重新登录</button>
   </view>
 
-  <view wx:else class="card">
-    <view class="row"><text class="k">姓名</text><text class="v">{{userInfo.name || '微信用户'}}</text></view>
-    <view class="row"><text class="k">角色</text><text class="v tag role">{{roleText}}</text></view>
-    <view class="row"><text class="k">志愿者等级</text><text class="v">{{volunteerLevelName}}</text></view>
-    <view class="row points"><text class="k">消费金余额</text><text class="v price">¥ {{points}}</text></view>
-  </view>
+  <!-- 登录成功：Dashboard -->
+  <block wx:else>
+    <!-- 消费金资产卡（重点强调：金额=primary-color；图标=primary-color） -->
+    <view class="card" style="border: 2rpx solid var(--primary-color); box-shadow: 0 8rpx 28rpx rgba(125,214,26,0.16);">
+      <view class="row" style="border-bottom: none; padding: 0 0 8rpx;">
+        <text class="k" style="font-size: 28rpx; font-weight: 600;">💰 消费金余额</text>
+        <text class="v" style="color: var(--primary-color);">可核销</text>
+      </view>
+      <view style="margin-top: 8rpx;">
+        <text class="price" style="font-size: 60rpx;">¥ {{points}}</text>
+        <text class="v" style="color: var(--text-muted); margin-left: 12rpx;">CNY</text>
+      </view>
+    </view>
 
-  <view class="tips">Tips：消费金来源于「志愿服务」「旧衣回收」等公益活动，可在社区合作商户核销。</view>
+    <!-- 身份信息卡 -->
+    <view class="card">
+      <view class="row">
+        <text class="k">🙋 姓名</text>
+        <text class="v">{{userInfo.name || '微信用户'}}</text>
+      </view>
+      <view class="row">
+        <text class="k">🛡 角色</text>
+        <text class="v tag role">{{roleText}}</text>
+      </view>
+      <view class="row">
+        <text class="k" style="color: var(--primary-color);">🎖 志愿者等级</text>
+        <text class="v" style="color: var(--primary-color); font-weight: 700;">{{volunteerLevelName}}</text>
+      </view>
+      <view class="row" style="border-bottom: none;">
+        <text class="k">⏱ 累计时长</text>
+        <text class="v">{{userInfo.volunteer_hours || '0.0'}} 小时</text>
+      </view>
+    </view>
+  </block>
+
+  <view class="tips" style="color: var(--text-muted);">
+    Tips：消费金来源于「志愿服务」「旧衣回收」等公益活动，可在社区合作商户核销。
+  </view>
 </view>
