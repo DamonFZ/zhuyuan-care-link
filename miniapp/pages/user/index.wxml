@@ -1,16 +1,35 @@
 <view class="page">
-  <!-- 顶部绿色横幅 Hero（含头像） -->
-  <view class="hero hero-profile">
-    <image
-      class="hero-avatar"
-      src="{{avatarUrl || '/assets/icons/user-active.png'}}"
-      mode="aspectFill"
-      bindtap="onEditProfile"
-    ></image>
-    <view class="hero-text">
-      <view class="hero-title">{{userInfo.name || '微信用户'}}</view>
-      <view class="hero-sub">{{roleText}} · {{volunteerLevelName}}</view>
+  <!-- 顶部绿色高亮区（用户资料 + 核心资产数据） -->
+  <view class="header-bg">
+    <view class="user-profile">
+      <image
+        class="avatar"
+        src="{{avatarUrl || '/assets/icons/user-active.png'}}"
+        mode="aspectFill"
+        bindtap="onEditProfile"
+      ></image>
+      <view class="profile-info">
+        <view class="name">{{userInfo.name || '微信用户'}}</view>
+        <view class="profile-tags">
+          <text class="profile-tag">{{roleText}}</text>
+          <text class="profile-tag">{{volunteerLevelName}}</text>
+        </view>
+      </view>
     </view>
+
+    <block wx:if="{{loginReady && !loginError}}">
+      <view class="user-assets">
+        <view class="asset-block">
+          <view class="asset-label">消费金余额(元)</view>
+          <view class="asset-value">¥ {{points}}</view>
+        </view>
+        <view class="asset-divider"></view>
+        <view class="asset-block">
+          <view class="asset-label">累计志愿时长(时)</view>
+          <view class="asset-value">{{userInfo.volunteer_hours || '0.0'}}</view>
+        </view>
+      </view>
+    </block>
   </view>
 
   <view wx:if="{{!loginReady}}" class="card card-loading">
@@ -23,40 +42,8 @@
     <button class="btn" bindtap="onRetryLogin">重新登录</button>
   </view>
 
-  <!-- 登录成功：Dashboard -->
+  <!-- 登录成功：仅保留菜单 -->
   <block wx:else>
-    <!-- 消费金资产卡 -->
-    <view class="card" style="border: 2rpx solid var(--primary-color); box-shadow: 0 8rpx 28rpx rgba(125,214,26,0.16);">
-      <view class="row" style="border-bottom: none; padding: 0 0 8rpx;">
-        <text class="k" style="font-size: 28rpx; font-weight: 600;">💰 消费金余额</text>
-        <text class="v" style="color: var(--primary-color);">可核销</text>
-      </view>
-      <view style="margin-top: 8rpx;">
-        <text class="price" style="font-size: 60rpx;">¥ {{points}}</text>
-        <text class="v" style="color: var(--text-muted); margin-left: 12rpx;">CNY</text>
-      </view>
-    </view>
-
-    <!-- 身份信息卡 -->
-    <view class="card">
-      <view class="row">
-        <text class="k">🙋 姓名</text>
-        <text class="v">{{userInfo.name || '微信用户'}}</text>
-      </view>
-      <view class="row">
-        <text class="k">🛡 角色</text>
-        <text class="v tag role">{{roleText}}</text>
-      </view>
-      <view class="row">
-        <text class="k" style="color: var(--primary-color);">🎖 志愿者等级</text>
-        <text class="v" style="color: var(--primary-color); font-weight: 700;">{{volunteerLevelName}}</text>
-      </view>
-      <view class="row" style="border-bottom: none;">
-        <text class="k">⏱ 累计时长</text>
-        <text class="v">{{userInfo.volunteer_hours || '0.0'}} 小时</text>
-      </view>
-    </view>
-
     <!-- 菜单列表：编辑个人信息等 -->
     <view class="menu-card">
       <view class="menu-item" bindtap="onEditProfile" hover-class="menu-item-hover">

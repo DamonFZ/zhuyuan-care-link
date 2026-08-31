@@ -1,26 +1,37 @@
 /* ===== pages/user/index.wxss（补充全局 app.wxss 没覆盖的） ===== */
 
-/* 顶部英雄区（升级为个人中心样式：左头像+右姓名） */
-.hero-profile {
+/* 顶部竹苑绿高亮区（含用户资料 + 资产摘要） */
+.header-bg {
+  margin: 0 -32rpx 0;      /* 抵消 .page padding，左右贯通 */
+  padding: 48rpx 40rpx 40rpx;
+  background: var(--primary-color);
+  background: linear-gradient(135deg, #7dd61a 0%, #a5e63e 100%);
+  border-bottom-left-radius: 32rpx;
+  border-bottom-right-radius: 32rpx;
+  color: #ffffff;
+  box-shadow: 0 8rpx 24rpx rgba(125, 214, 26, 0.22);
+}
+
+/* 上部：用户资料（头像 + 姓名/标签） */
+.user-profile {
   display: flex;
   align-items: center;
-  padding: 48rpx 40rpx 56rpx;
 }
-.hero-avatar {
+.user-profile .avatar {
   width: 136rpx;
   height: 136rpx;
   border-radius: 50%;
   border: 4rpx solid #ffffff;
   background: #fff;
-  box-shadow: 0 6rpx 24rpx rgba(0, 0, 0, 0.12);
+  box-shadow: 0 6rpx 24rpx rgba(0, 0, 0, 0.15);
   flex-shrink: 0;
 }
-.hero-text {
+.profile-info {
   flex: 1;
   margin-left: 28rpx;
   min-width: 0;
 }
-.hero-text .hero-title {
+.profile-info .name {
   color: #ffffff;
   font-size: 40rpx;
   font-weight: 700;
@@ -29,16 +40,59 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.hero-text .hero-sub {
-  color: #ffffff;
-  opacity: 0.9;
-  font-size: 26rpx;
-  margin-top: 8rpx;
+.profile-tags {
+  margin-top: 12rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+.profile-tag {
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 22rpx;
+  padding: 6rpx 18rpx;
+  border-radius: 999rpx;
+  backdrop-filter: blur(2rpx);
 }
 
-/* 菜单列表 */
+/* 下部：核心资产横向双栏 */
+.user-assets {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 40rpx;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 16rpx;
+  padding: 30rpx 0;
+}
+.asset-block {
+  flex: 1;
+  text-align: center;
+  color: #ffffff;
+  min-width: 0;
+}
+.asset-label {
+  font-size: 24rpx;
+  opacity: 0.8;
+  margin-bottom: 10rpx;
+}
+.asset-value {
+  font-size: 48rpx;
+  font-weight: bold;
+  letter-spacing: 1rpx;
+  line-height: 1.1;
+  color: #ffffff;
+}
+.asset-divider {
+  width: 1rpx;
+  height: 64rpx;
+  background: rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+}
+
+/* 菜单列表（顺滑衔接顶部绿底） */
 .menu-card {
-  margin-top: 28rpx;
+  margin-top: 44rpx;
   background: #ffffff;
   border-radius: 20rpx;
   padding: 0 32rpx;
