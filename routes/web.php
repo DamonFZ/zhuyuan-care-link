@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Api\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,6 +18,9 @@ use Illuminate\Support\Facades\Auth;
 Route::get('/', function () {
     return view('welcome');
 });
+
+// 微信小程序静默登录（已在 VerifyCsrfToken 排除 CSRF）
+Route::post('/wechat/login', [AuthController::class, 'wechatLogin']);
 
 Route::middleware('wechat.proxy.auth')->group(function () {
     Route::get('/h5/profile', function () {

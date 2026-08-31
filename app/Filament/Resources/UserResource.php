@@ -78,6 +78,15 @@ class UserResource extends Resource
                                     ->default('1.00')
                                     ->required(),
                             ]),
+                        Forms\Components\Select::make('role')
+                            ->label('后台角色')
+                            ->options([
+                                'resident' => '社区居民',
+                                'merchant' => '核销商户',
+                                'operator' => '操作员',
+                            ])
+                            ->required()
+                            ->default('resident'),
                     ])->columns(3),
                 Forms\Components\Section::make('账号安全')
                     ->schema([
@@ -119,6 +128,21 @@ class UserResource extends Resource
                         default => 'gray',
                     })
                     ->placeholder('未设置'),
+                Tables\Columns\TextColumn::make('role')
+                    ->label('角色')
+                    ->badge()
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'resident' => '社区居民',
+                        'merchant' => '核销商户',
+                        'operator' => '操作员',
+                        default => $state,
+                    })
+                    ->color(fn (string $state): string => match ($state) {
+                        'resident' => 'success',
+                        'merchant' => 'warning',
+                        'operator' => 'danger',
+                        default => 'gray',
+                    }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('注册时间')
                     ->dateTime()

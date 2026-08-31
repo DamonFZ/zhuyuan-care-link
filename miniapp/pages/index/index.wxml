@@ -1,0 +1,25 @@
+<view class="page">
+  <view class="hero">
+    <view class="hero-title">竹苑益家人 · CareLink</view>
+    <view class="hero-sub">让社区更有温度</view>
+  </view>
+
+  <view wx:if="{{!loginReady}}" class="card card-loading">
+    <view>⏳ 正在用微信账号自动登录…</view>
+  </view>
+
+  <view wx:elif="{{loginError}}" class="card card-error">
+    <view class="err-title">登录受阻</view>
+    <view class="err-msg">{{loginError}}</view>
+    <button class="btn" bindtap="onRetryLogin">重新登录</button>
+  </view>
+
+  <view wx:else class="card">
+    <view class="row"><text class="k">姓名</text><text class="v">{{userInfo.name || '微信用户'}}</text></view>
+    <view class="row"><text class="k">角色</text><text class="v tag role">{{roleText}}</text></view>
+    <view class="row"><text class="k">志愿者等级</text><text class="v">{{volunteerLevelName}}</text></view>
+    <view class="row points"><text class="k">消费金余额</text><text class="v price">¥ {{points}}</text></view>
+  </view>
+
+  <view class="tips">Tips：消费金来源于「志愿服务」「旧衣回收」等公益活动，可在社区合作商户核销。</view>
+</view>
