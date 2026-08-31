@@ -31,3 +31,9 @@ auth.json
 
 # IDE
 .idea/
+
+# 微信开发者工具
+miniapp/project.private.config.json
+miniapp/miniprogram_npm/
+miniapp/node_modules/
+miniapp/.eslintcache
