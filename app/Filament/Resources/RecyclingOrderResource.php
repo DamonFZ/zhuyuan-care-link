@@ -22,6 +22,10 @@ class RecyclingOrderResource extends Resource
 
     protected static ?string $pluralModelLabel = "旧衣回收";
 
+    protected static ?string $navigationGroup = '业务台账';
+
+    protected static ?int $navigationSort = 1;
+
     public static function form(Form $form): Form
     {
         return $form

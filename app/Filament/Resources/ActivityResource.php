@@ -23,7 +23,9 @@ class ActivityResource extends Resource
 
     protected static ?string $pluralModelLabel = "审计日志";
 
-    protected static ?int $navigationSort = 200;
+    protected static ?string $navigationGroup = '系统管理';
+
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {

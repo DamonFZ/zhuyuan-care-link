@@ -22,7 +22,9 @@ class SettingResource extends Resource
 
     protected static ?string $pluralModelLabel = "系统配置";
 
-    protected static ?int $navigationSort = 100;
+    protected static ?string $navigationGroup = '系统管理';
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {

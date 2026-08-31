@@ -22,7 +22,9 @@ class VolunteerServiceTypeResource extends Resource
 
     protected static ?string $pluralModelLabel = '志愿岗位';
 
-    protected static ?int $navigationSort = 45;
+    protected static ?string $navigationGroup = '基础档案';
+
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {

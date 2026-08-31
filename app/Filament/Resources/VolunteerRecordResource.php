@@ -26,6 +26,10 @@ class VolunteerRecordResource extends Resource
 
     protected static ?string $pluralModelLabel = "志愿服务";
 
+    protected static ?string $navigationGroup = '业务台账';
+
+    protected static ?int $navigationSort = 2;
+
     /**
      * 统一的计算函数（前端侧）：
      * - final_hours = base_hours × multiplier

@@ -22,7 +22,9 @@ class PointTransactionResource extends Resource
 
     protected static ?string $pluralModelLabel = "消费金流水";
 
-    protected static ?int $navigationSort = 50;
+    protected static ?string $navigationGroup = '业务台账';
+
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {
