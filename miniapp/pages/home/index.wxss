@@ -13,7 +13,7 @@ page {
 
 /* ---------- 轮播 ---------- */
 .swiper-wrap {
-  margin: 0 24rpx 24rpx;
+  margin: 24rpx 24rpx;
 }
 .banner {
   width: 100%;

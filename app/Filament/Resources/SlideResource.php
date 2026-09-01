@@ -81,9 +81,9 @@ class SlideResource extends Resource
                     ->label('排序')
                     ->sortable()
                     ->badge()
-                    ->color(fn ($v) => $v < 0 ? 'danger' : ($v == 0 ? 'info' : 'warning')),
+                    ->color(fn (mixed $state): string => $state < 0 ? 'danger' : ($state == 0 ? 'info' : 'warning')),
                 Tables\Columns\IconColumn::make('is_visible')
-                    ->label('可见')
+                    ->label('是否可见')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('更新时间')
