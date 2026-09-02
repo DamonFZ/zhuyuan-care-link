@@ -7,13 +7,13 @@
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#7dd61a",
+    "navigationBarBackgroundColor": "#ff7a33",
     "navigationBarTitleText": "竹苑益家人",
     "navigationBarTextStyle": "white"
   },
   "tabBar": {
     "color": "#9ca3af",
-    "selectedColor": "#7dd61a",
+    "selectedColor": "#ff7a33",
     "backgroundColor": "#ffffff",
     "borderStyle": "white",
     "list": [

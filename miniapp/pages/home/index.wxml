@@ -42,14 +42,14 @@
 
       <!-- 居民积分 -->
       <view class="grid-card" bindtap="onPointsTap" hover-class="grid-card-hover">
-        <view class="grid-icon grid-icon-green">💰</view>
+        <view class="grid-icon grid-icon-primary">💰</view>
         <view class="grid-title">居民消费金</view>
         <view class="grid-desc">我的账户与流水</view>
       </view>
 
       <!-- 活动打卡（扫码） -->
       <view class="grid-card" bindtap="onScanTap" hover-class="grid-card-hover">
-        <view class="grid-icon grid-icon-orange">📸</view>
+        <view class="grid-icon grid-icon-secondary">📸</view>
         <view class="grid-title">活动扫码打卡</view>
         <view class="grid-desc">志愿岗位快速签到</view>
       </view>

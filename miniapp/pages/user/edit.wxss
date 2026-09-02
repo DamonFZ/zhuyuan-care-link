@@ -29,7 +29,7 @@
   border-radius: 50%;
   background: #ffffff;
   border: 6rpx solid #ffffff;
-  box-shadow: 0 8rpx 24rpx rgba(125, 214, 26, 0.18);
+  box-shadow: 0 8rpx 24rpx rgba(255, 122, 51, 0.18);
   margin-bottom: 16rpx;
 }
 .avatar-tip {
@@ -53,11 +53,11 @@
   border-radius: 20rpx;
   padding: 28rpx 32rpx 32rpx;
   border: 1rpx solid var(--primary-light);
-  box-shadow: 0 4rpx 20rpx rgba(125, 214, 26, 0.05);
+  box-shadow: 0 4rpx 20rpx rgba(255, 122, 51, 0.05);
 }
 .label-title {
   font-size: 28rpx;
-  color: #365314;
+  color: #9a3412;
   font-weight: 700;
   margin-bottom: 18rpx;
 }
@@ -66,7 +66,7 @@
 
 .input {
   width: 100%;
-  background: #f6faf0;
+  background: #fff8f3;
   border-radius: 16rpx;
   padding: 24rpx 24rpx;
   font-size: 30rpx;
@@ -102,7 +102,7 @@
   font-size: 32rpx;
   font-weight: 700;
   letter-spacing: 4rpx;
-  box-shadow: 0 10rpx 26rpx rgba(125, 214, 26, 0.3);
+  box-shadow: 0 10rpx 26rpx rgba(255, 122, 51, 0.3);
   border: none;
 }
 .btn-save[disabled] {

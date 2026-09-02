@@ -1,20 +1,21 @@
 /* =========================================================
- * CareLink 竹苑益家人 · 全局主题（竹苑绿 #7dd61a）
+ * CareLink 竹苑益家人 · 全局主题（暖橙 #ff7a33 + 渐变）
  * 设计原则：
- *   — 所有主色/强调色统一走 --primary-color / --primary-light CSS 变量
- *   — 绿色背景上的文字固定使用 #fff 纯白，保障适老化对比度
+ *   — 所有主色/强调色统一走 --primary-color / --primary-gradient / --primary-light CSS 变量
+ *   — 橙色背景上的文字固定使用 #fff 纯白，保障适老化对比度
  *   — 语义色保持独立：error/danger 红、text 深灰，不因换肤而变
  * =======================================================*/
 
 page {
-  /* 主题变量 */
-  --primary-color: #7dd61a;
-  --primary-light: rgba(125, 214, 26, 0.1);
+  /* 主题变量（暖橙渐变风） */
+  --primary-color: #ff7a33;
+  --primary-gradient: linear-gradient(180deg, #ff8c42 0%, #ff6b35 100%);
+  --primary-light: rgba(255, 122, 51, 0.1);
 
   /* 语义色（不变） */
   --text-body: #1f2937;
-  --text-muted: #365314;
-  --bg-page: linear-gradient(180deg, rgba(125, 214, 26, 0.12) 0%, #ffffff 40%);
+  --text-muted: #9a3412;
+  --bg-page: linear-gradient(180deg, rgba(255, 122, 51, 0.12) 0%, #ffffff 40%);
 
   background: var(--bg-page);
 }
@@ -25,15 +26,15 @@ page {
   box-sizing: border-box;
 }
 
-/* 顶部英雄区（竹苑专属绿 Banner） */
+/* 顶部英雄区（暖橙渐变 Banner） */
 .hero {
   padding: 40rpx 32rpx;
   margin: 0 -32rpx 12rpx;
-  background: linear-gradient(135deg, #7dd61a 0%, #a5e63e 100%);
+  background: var(--primary-gradient);
   border-bottom-left-radius: 32rpx;
   border-bottom-right-radius: 32rpx;
   color: #ffffff;
-  box-shadow: 0 8rpx 24rpx rgba(125, 214, 26, 0.25);
+  box-shadow: 0 8rpx 24rpx rgba(255, 122, 51, 0.25);
 }
 .hero-title {
   font-size: 42rpx;
@@ -54,7 +55,7 @@ page {
   background: #fff;
   border-radius: 20rpx;
   padding: 32rpx;
-  box-shadow: 0 4rpx 24rpx rgba(125, 214, 26, 0.08);
+  box-shadow: 0 4rpx 24rpx rgba(255, 122, 51, 0.08);
   border: 1rpx solid var(--primary-light);
 }
 .card-loading {
@@ -87,7 +88,7 @@ page {
   font-weight: 600;
   padding: 16rpx 0;
   border: none;
-  box-shadow: 0 6rpx 18rpx rgba(125, 214, 26, 0.3);
+  box-shadow: 0 6rpx 18rpx rgba(255, 122, 51, 0.3);
 }
 .btn::after {
   border: none;
@@ -114,21 +115,21 @@ page {
   font-weight: 500;
 }
 
-/* 角色标签（浅绿底 + 深绿字） */
+/* 角色标签（浅橙底 + 深橙字） */
 .tag {
   padding: 6rpx 20rpx;
   border-radius: 999rpx;
   background: var(--primary-light);
-  color: #4d7c0f;
+  color: #7c2d12;
   font-size: 24rpx;
   font-weight: 600;
 }
 .tag.role {
   background: var(--primary-light);
-  color: #365314;
+  color: #9a3412;
 }
 
-/* 消费金余额（大字绿色金额） */
+/* 消费金余额（大字主题色金额） */
 .price {
   color: var(--primary-color);
   font-size: 38rpx;

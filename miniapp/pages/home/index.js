@@ -79,7 +79,7 @@ Page({
             title: '扫码结果',
             content: `类型: ${res.scanType}\n内容: ${res.result}`,
             showCancel: false,
-            confirmColor: '#7dd61a',
+            confirmColor: '#ff7a33',
           });
         }, 600);
       },
