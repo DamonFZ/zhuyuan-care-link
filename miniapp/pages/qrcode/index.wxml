@@ -11,16 +11,14 @@
     </view>
 
     <view class="qr-canvas-wrap">
-      <canvas
-        class="qr-canvas"
-        canvas-id="qrcode"
-        id="qrcode"
-        style="width:{{qrCanvasSize}}px;height:{{qrCanvasSize}}px;"
-      ></canvas>
-    </view>
-
-    <view class="qr-loading" wx:if="{{!token}}">
-      <text>核销码生成中…</text>
+      <image
+        wx:if="{{qr_image}}"
+        class="qr-image"
+        src="{{qr_image}}"
+        mode="aspectFit"
+        show-menu-by-longpress="false"
+      />
+      <view wx:else class="qr-image-placeholder">核销码生成中…</view>
     </view>
 
     <view class="qr-tips">

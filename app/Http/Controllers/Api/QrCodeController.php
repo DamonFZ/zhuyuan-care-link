@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 /**
  * 动态核销码（居民端展示 / 商户端扫码解析）
@@ -34,6 +35,11 @@ class QrCodeController extends Controller
 
         Cache::put('qr_token_' . $token, $userId, now()->addSeconds($ttl));
 
+        // 由后端直接生成 SVG 二维码并转 Base64，前端仅用 <image> 展示，
+        // 彻底规避小程序 Canvas 2D API 在不同基础库下的兼容性问题。
+        $qrSvg = QrCode::size(300)->margin(1)->generate($token);
+        $qrBase64 = 'data:image/svg+xml;base64,' . base64_encode($qrSvg);
+
         return response()->json([
             'code'    => 200,
             'message' => 'success',
@@ -41,6 +47,7 @@ class QrCodeController extends Controller
                 'token'      => $token,
                 'expires_at' => now()->addSeconds($ttl)->toDateTimeString(),
                 'ttl'        => $ttl,
+                'qr_image'   => $qrBase64,
             ],
         ], 200);
     }

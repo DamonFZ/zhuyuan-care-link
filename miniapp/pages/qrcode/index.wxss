@@ -53,7 +53,7 @@ page {
   font-weight: 600;
 }
 
-/* 二维码画布 */
+/* 二维码图片（后端返回 base64 SVG） */
 .qr-canvas-wrap {
   width: 100%;
   display: flex;
@@ -61,14 +61,23 @@ page {
   padding: 24rpx;
   box-sizing: border-box;
 }
-.qr-canvas {
+.qr-image {
+  width: 400rpx;
+  height: 400rpx;
+  margin: 0 auto;
+  display: block;
   background: #ffffff;
 }
-
-.qr-loading {
-  margin-top: 20rpx;
+.qr-image-placeholder {
+  width: 400rpx;
+  height: 400rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #9ca3af;
   font-size: 26rpx;
+  background: #f9fafb;
+  border-radius: 16rpx;
 }
 
 /* 提示 */
