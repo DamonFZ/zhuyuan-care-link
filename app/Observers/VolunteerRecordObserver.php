@@ -13,15 +13,15 @@ use Illuminate\Support\Facades\DB;
  *      - multiplier / final_hours / reward_points 都按用户真实等级 + 岗位真实时薪重算
  *
  *  created:
- *      - 用户总志愿时长 +final_hours
+ *      - 用户总志愿时长 +base_hours（仅累加实际基础时长，不含等级倍率）
  *      - 用户消费金 +reward_points（通过 modifyPoints，自动记流水）
  *
  *  updated:
- *      - 时长：按 (new_final - old_final) 差额校准
+ *      - 时长：按 (new_base - old_base) 差额校准
  *      - 消费金：按 (new_reward - old_reward) 差额 modifyPoints（负则扣）
  *
  *  deleted:
- *      - 时长 -final_hours
+ *      - 时长 -base_hours
  *      - 消费金 -reward_points（modifyPoints 负数扣）
  */
 class VolunteerRecordObserver
@@ -46,10 +46,10 @@ class VolunteerRecordObserver
             $locked = User::where('id', $record->user_id)->lockForUpdate()->first();
             if (!$locked) return;
 
-            // 1) 累计总志愿时长
-            if ($record->final_hours > 0) {
+            // 1) 累计总志愿时长（仅累加实际基础时长 base_hours，不含等级倍率）
+            if ($record->base_hours > 0) {
                 $locked->update([
-                    'volunteer_hours' => bcadd($locked->volunteer_hours, $record->final_hours, 1),
+                    'volunteer_hours' => bcadd($locked->volunteer_hours, $record->base_hours, 2),
                 ]);
             }
 
@@ -66,20 +66,20 @@ class VolunteerRecordObserver
     {
         if (!$record->user_id) return;
 
-        $oldFinal   = (string)($record->getOriginal('final_hours')   ?? '0');
-        $newFinal   = (string)($record->final_hours                ?? '0');
+        $oldBase    = (string)($record->getOriginal('base_hours')    ?? '0');
+        $newBase    = (string)($record->base_hours                   ?? '0');
         $oldReward  = (string)($record->getOriginal('reward_points') ?? '0.00');
         $newReward  = (string)($record->reward_points              ?? '0.00');
         $oldUserId  = $record->getOriginal('user_id');
 
         // 换绑用户：两边各自调整
         if ($oldUserId && $oldUserId != $record->user_id) {
-            DB::transaction(function () use ($record, $oldFinal, $oldReward, $oldUserId) {
+            DB::transaction(function () use ($record, $oldBase, $oldReward, $oldUserId) {
                 // 老用户：扣时长、扣消费金
                 $old = User::where('id', $oldUserId)->lockForUpdate()->first();
                 if ($old) {
-                    $newHours = bcsub($old->volunteer_hours, $oldFinal, 1);
-                    $old->update(['volunteer_hours' => bccomp($newHours, '0', 1) < 0 ? '0.0' : $newHours]);
+                    $newHours = bcsub($old->volunteer_hours, $oldBase, 2);
+                    $old->update(['volunteer_hours' => bccomp($newHours, '0', 2) < 0 ? '0.00' : $newHours]);
                     if (bccomp($oldReward, '0.00', 2) > 0) {
                         $old->refresh()->modifyPoints(bcmul($oldReward, '-1', 2),
                             "志愿服务奖励冲回（调账）：{$record->title}");
@@ -89,7 +89,7 @@ class VolunteerRecordObserver
                 $newU = User::where('id', $record->user_id)->lockForUpdate()->first();
                 if ($newU) {
                     $newU->update([
-                        'volunteer_hours' => bcadd($newU->volunteer_hours, $record->final_hours, 1),
+                        'volunteer_hours' => bcadd($newU->volunteer_hours, $record->base_hours, 2),
                     ]);
                     if (bccomp($record->reward_points, '0.00', 2) > 0) {
                         $newU->refresh()->modifyPoints($record->reward_points,
@@ -100,16 +100,16 @@ class VolunteerRecordObserver
             return;
         }
 
-        $deltaH  = bcsub($newFinal,  $oldFinal,  1);
+        $deltaH  = bcsub($newBase,   $oldBase,   2);
         $deltaR  = bcsub($newReward, $oldReward, 2);
 
         DB::transaction(function () use ($record, $deltaH, $deltaR) {
             $locked = User::where('id', $record->user_id)->lockForUpdate()->first();
             if (!$locked) return;
 
-            if (bccomp($deltaH, '0', 1) !== 0) {
-                $newHours = bcadd($locked->volunteer_hours, $deltaH, 1);
-                $locked->update(['volunteer_hours' => bccomp($newHours, '0', 1) < 0 ? '0.0' : $newHours]);
+            if (bccomp($deltaH, '0', 2) !== 0) {
+                $newHours = bcadd($locked->volunteer_hours, $deltaH, 2);
+                $locked->update(['volunteer_hours' => bccomp($newHours, '0', 2) < 0 ? '0.00' : $newHours]);
                 $locked->refresh();
             }
 
@@ -129,9 +129,9 @@ class VolunteerRecordObserver
             $locked = User::where('id', $record->user_id)->lockForUpdate()->first();
             if (!$locked) return;
 
-            if ($record->final_hours > 0) {
-                $newHours = bcsub($locked->volunteer_hours, $record->final_hours, 1);
-                $locked->update(['volunteer_hours' => bccomp($newHours, '0', 1) < 0 ? '0.0' : $newHours]);
+            if ($record->base_hours > 0) {
+                $newHours = bcsub($locked->volunteer_hours, $record->base_hours, 2);
+                $locked->update(['volunteer_hours' => bccomp($newHours, '0', 2) < 0 ? '0.00' : $newHours]);
                 $locked->refresh();
             }
 

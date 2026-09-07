@@ -231,13 +231,13 @@ class VolunteerRecordResource extends Resource
                                 );
                             }
 
-                            // 2) 回退用户总志愿时长（使用行锁保证并发安全）
-                            if ($record->final_hours > 0) {
+                            // 2) 回退用户总志愿时长（仅扣回实际基础时长 base_hours，使用行锁保证并发安全）
+                            if ($record->base_hours > 0) {
                                 $locked = \App\Models\User::where('id', $record->user_id)
                                     ->lockForUpdate()->first();
                                 if ($locked) {
-                                    $newVal = bcsub($locked->volunteer_hours, (string)$record->final_hours, 1);
-                                    if (bccomp($newVal, '0', 1) < 0) $newVal = '0.0';
+                                    $newVal = bcsub($locked->volunteer_hours, (string)$record->base_hours, 2);
+                                    if (bccomp($newVal, '0', 2) < 0) $newVal = '0.00';
                                     $locked->update(['volunteer_hours' => $newVal]);
                                 }
                             }

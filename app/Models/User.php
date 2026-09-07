@@ -39,6 +39,7 @@ class User extends Authenticatable implements FilamentUser
         "email_verified_at" => "datetime",
         "password" => "hashed",
         "points" => "decimal:2",
+        "volunteer_hours" => "decimal:2",
     ];
 
     public function getActivitylogOptions(): LogOptions

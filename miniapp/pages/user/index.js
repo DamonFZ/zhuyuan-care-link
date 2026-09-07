@@ -11,6 +11,7 @@ Page({
     userInfo: null,
     roleText: '',
     points: '0.00',
+    volunteerHours: '0.00',
     volunteerLevelName: '',
     avatarUrl: '',
   },
@@ -56,6 +57,7 @@ Page({
       userInfo: u,
       roleText: roleMap[app.globalData.role] || app.globalData.role,
       points: Number(app.globalData.points || 0).toFixed(2),
+      volunteerHours: Number(u.volunteer_hours || 0).toFixed(2),
       volunteerLevelName: (app.globalData.volunteerLevel && app.globalData.volunteerLevel.name) || '未评级',
       avatarUrl: u.avatar || '',
     });
