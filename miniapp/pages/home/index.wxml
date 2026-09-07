@@ -1,61 +1,86 @@
 <view class="home-page">
 
-  <!-- ========== 轮播图（16:9 铺满宽度） ========== -->
-  <view class="swiper-wrap">
-    <swiper
-      class="banner"
-      indicator-dots="{{true}}"
-      autoplay="{{true}}"
-      interval="4000"
-      duration="500"
-      circular="{{true}}"
-      indicator-color="rgba(255,255,255,0.5)"
-      indicator-active-color="#ffffff"
-    >
-      <block wx:for="{{slides}}" wx:key="id">
-        <swiper-item bindtap="onSlideTap" data-item="{{item}}">
-          <image
-            class="banner-img"
-            src="{{item.image_url}}"
-            mode="aspectFill"
-            lazy-load
-          ></image>
-          <view wx:if="{{item.title}}" class="banner-title">
-            <text>{{item.title}}</text>
+  <!-- ========== 商户端：全屏大扫码按钮 ========== -->
+  <block wx:if="{{role === 'merchant'}}">
+    <view class="merchant-wrap">
+      <view class="merchant-greeting">
+        <view class="merchant-hello">你好，{{userInfo.name || '商户'}}</view>
+        <view class="merchant-sub">今日已为社区核销 {{todayCount}} 笔</view>
+      </view>
+
+      <view class="scan-btn" bindtap="onMerchantScan" hover-class="scan-btn-hover">
+        <view class="scan-icon">📷</view>
+        <view class="scan-text">扫码核销</view>
+        <view class="scan-sub">点击扫描居民核销码</view>
+      </view>
+
+      <view class="merchant-tip">
+        请将扫码框对准居民出示的动态核销码
+      </view>
+    </view>
+  </block>
+
+  <!-- ========== 居民端：轮播 + 宫格 ========== -->
+  <block wx:else>
+
+    <!-- 轮播图（16:9 铺满宽度） -->
+    <view class="swiper-wrap">
+      <swiper
+        class="banner"
+        indicator-dots="{{true}}"
+        autoplay="{{true}}"
+        interval="4000"
+        duration="500"
+        circular="{{true}}"
+        indicator-color="rgba(255,255,255,0.5)"
+        indicator-active-color="#ffffff"
+      >
+        <block wx:for="{{slides}}" wx:key="id">
+          <swiper-item bindtap="onSlideTap" data-item="{{item}}">
+            <image
+              class="banner-img"
+              src="{{item.image_url}}"
+              mode="aspectFill"
+              lazy-load
+            ></image>
+            <view wx:if="{{item.title}}" class="banner-title">
+              <text>{{item.title}}</text>
+            </view>
+          </swiper-item>
+        </block>
+        <!-- 空状态：后台未上传轮播图时显示占位 -->
+        <swiper-item wx:if="{{slides.length === 0}}">
+          <view class="banner-placeholder">
+            <view class="ph-title">竹苑益家人 · 社区公益大盘</view>
+            <view class="ph-sub">志愿服务 · 旧衣回收 · 邻里互助</view>
           </view>
         </swiper-item>
-      </block>
-      <!-- 空状态：后台未上传轮播图时显示占位 -->
-      <swiper-item wx:if="{{slides.length === 0}}">
-        <view class="banner-placeholder">
-          <view class="ph-title">竹苑益家人 · 社区公益大盘</view>
-          <view class="ph-sub">志愿服务 · 旧衣回收 · 邻里互助</view>
-        </view>
-      </swiper-item>
-    </swiper>
-  </view>
-
-  <!-- ========== 功能宫格（两列并排，flex） ========== -->
-  <view class="grid-section">
-    <view class="section-title">🔋 便民服务</view>
-    <view class="grid-2">
-
-      <!-- 居民积分 -->
-      <view class="grid-card" bindtap="onPointsTap" hover-class="grid-card-hover">
-        <view class="grid-icon grid-icon-primary">💰</view>
-        <view class="grid-title">居民消费金</view>
-        <view class="grid-desc">我的账户与流水</view>
-      </view>
-
-      <!-- 活动打卡（扫码） -->
-      <view class="grid-card" bindtap="onScanTap" hover-class="grid-card-hover">
-        <view class="grid-icon grid-icon-secondary">📸</view>
-        <view class="grid-title">活动扫码打卡</view>
-        <view class="grid-desc">志愿岗位快速签到</view>
-      </view>
-
+      </swiper>
     </view>
-  </view>
 
-  <view class="home-tips">* 消费金来源于「志愿服务」「旧衣回收」等公益活动，可在社区合作商户核销。</view>
+    <!-- 功能宫格（两列并排，flex） -->
+    <view class="grid-section">
+      <view class="section-title">🔋 便民服务</view>
+      <view class="grid-2">
+
+        <!-- 居民消费金 -->
+        <view class="grid-card" bindtap="onPointsTap" hover-class="grid-card-hover">
+          <view class="grid-icon grid-icon-primary">💰</view>
+          <view class="grid-title">居民消费金</view>
+          <view class="grid-desc">我的账户与流水</view>
+        </view>
+
+        <!-- 出示核销码 -->
+        <view class="grid-card" bindtap="onQrCodeTap" hover-class="grid-card-hover">
+          <view class="grid-icon grid-icon-secondary">📱</view>
+          <view class="grid-title">出示核销码</view>
+          <view class="grid-desc">向商户展示动态码</view>
+        </view>
+
+      </view>
+    </view>
+
+    <view class="home-tips">* 消费金来源于「志愿服务」「旧衣回收」等公益活动，可在社区合作商户核销。</view>
+  </block>
+
 </view>

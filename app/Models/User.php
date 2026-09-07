@@ -104,7 +104,7 @@ class User extends Authenticatable implements FilamentUser
             if (bccomp($changeAmount, '0.00', 2) < 0) {
                 $newVal = bcadd($original, $changeAmount, 2); // 负变相加等于减
                 if (bccomp($newVal, '0.00', 2) < 0) {
-                    throw new \RuntimeException("用户消费金不足：余额 $original，需要扣 " . bcmul($changeAmount, '-1', 2));
+                    throw new \RuntimeException("用户消费金不足：余额 {$original}，需要扣 " . bcmul($changeAmount, '-1', 2));
                 }
             } else {
                 $newVal = bcadd($original, $changeAmount, 2);

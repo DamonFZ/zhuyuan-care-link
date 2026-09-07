@@ -1,0 +1,35 @@
+<view class="qr-page">
+  <view class="qr-card">
+    <view class="user-info">
+      <image
+        class="user-avatar"
+        src="{{userInfo.avatar || '/assets/icons/user-active.png'}}"
+        mode="aspectFill"
+      />
+      <view class="user-name">{{userInfo.name || '微信用户'}}</view>
+      <view class="user-balance">消费金余额：¥ {{points}}</view>
+    </view>
+
+    <view class="qr-canvas-wrap">
+      <canvas
+        class="qr-canvas"
+        canvas-id="qrcode"
+        id="qrcode"
+        style="width:{{qrCanvasSize}}px;height:{{qrCanvasSize}}px;"
+      ></canvas>
+    </view>
+
+    <view class="qr-loading" wx:if="{{!token}}">
+      <text>核销码生成中…</text>
+    </view>
+
+    <view class="qr-tips">
+      <view class="tip-main">⏱ 每 60 秒自动刷新，请勿截图</view>
+      <view class="tip-sub">请将此二维码出示给社区合作商户扫码核销</view>
+    </view>
+
+    <view class="qr-countdown" wx:if="{{token}}">
+      {{countdown}}s 后刷新
+    </view>
+  </view>
+</view>

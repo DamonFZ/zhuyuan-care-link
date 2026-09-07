@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\HomeController;
+use App\Http\Controllers\Api\MerchantController;
+use App\Http\Controllers\Api\QrCodeController;
 use App\Http\Controllers\Api\UploadController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
@@ -33,4 +35,12 @@ Route::middleware("auth:sanctum")->group(function () {
 
     // 个人资料查询（结构化返回，含等级/头像）
     Route::get("/user/profile",  [UserController::class, 'getProfile']);
+
+    // ===== 动态核销码 & 商户扫码扣款闭环 =====
+    // 居民：生成 60s 动态核销 Token
+    Route::get('/qrcode/generate', [QrCodeController::class, 'generate']);
+    // 商户：根据 token 解析出被核销用户资料
+    Route::post('/qrcode/resolve', [QrCodeController::class, 'resolve']);
+    // 商户：执行扣款（内部调用 $user->modifyPoints，行锁+余额校验）
+    Route::post('/merchant/deduct', [MerchantController::class, 'deduct']);
 });

@@ -3,7 +3,9 @@
     "pages/home/index",
     "pages/user/index",
     "pages/points/index",
-    "pages/user/edit"
+    "pages/user/edit",
+    "pages/qrcode/index",
+    "pages/merchant/deduct"
   ],
   "window": {
     "backgroundTextStyle": "light",

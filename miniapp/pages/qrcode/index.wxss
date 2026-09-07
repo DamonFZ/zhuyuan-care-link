@@ -1,0 +1,99 @@
+/* pages/qrcode/index.wxss —— 动态核销码页（暖橙主视觉） */
+page {
+  background: var(--primary-gradient);
+  height: 100vh;
+}
+
+.qr-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48rpx 40rpx;
+  box-sizing: border-box;
+}
+
+.qr-card {
+  width: 100%;
+  max-width: 600rpx;
+  background: #ffffff;
+  border-radius: 32rpx;
+  padding: 48rpx 40rpx 40rpx;
+  box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 用户信息 */
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 36rpx;
+}
+.user-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  border: 4rpx solid var(--primary-color);
+  background: #fff;
+}
+.user-name {
+  margin-top: 16rpx;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #1f2937;
+}
+.user-balance {
+  margin-top: 8rpx;
+  font-size: 26rpx;
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+/* 二维码画布 */
+.qr-canvas-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+.qr-canvas {
+  background: #ffffff;
+}
+
+.qr-loading {
+  margin-top: 20rpx;
+  color: #9ca3af;
+  font-size: 26rpx;
+}
+
+/* 提示 */
+.qr-tips {
+  margin-top: 32rpx;
+  text-align: center;
+}
+.tip-main {
+  font-size: 26rpx;
+  color: #9a3412;
+  font-weight: 600;
+}
+.tip-sub {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #9ca3af;
+  line-height: 1.6;
+}
+
+/* 倒计时 */
+.qr-countdown {
+  margin-top: 24rpx;
+  font-size: 24rpx;
+  color: #6b7280;
+  background: var(--primary-light);
+  padding: 8rpx 28rpx;
+  border-radius: 999rpx;
+}

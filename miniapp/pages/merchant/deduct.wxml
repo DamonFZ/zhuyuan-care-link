@@ -1,0 +1,58 @@
+<view class="deduct-page">
+
+  <!-- 被核销用户信息 -->
+  <view class="target-card">
+    <image
+      class="target-avatar"
+      src="{{targetUser.avatar || '/assets/icons/user-active.png'}}"
+      mode="aspectFill"
+    />
+    <view class="target-info">
+      <view class="target-name">{{targetUser.name || '微信用户'}}</view>
+      <view class="target-balance">
+        当前余额：<text class="balance-num">¥ {{targetUser.points}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 金额输入 -->
+  <view class="amount-section">
+    <view class="amount-label">核销金额（元）</view>
+    <view class="amount-input-wrap">
+      <text class="amount-unit">¥</text>
+      <input
+        class="amount-input"
+        type="digit"
+        placeholder="0.00"
+        value="{{amount}}"
+        bindinput="onAmountInput"
+        focus="{{true}}"
+        confirm-type="done"
+      />
+    </view>
+    <view class="amount-hint">请输入居民需核销的消费金金额，最多 2 位小数</view>
+
+    <!-- 快捷金额 -->
+    <view class="quick-amount">
+      <view
+        class="quick-item"
+        wx:for="{{[1, 5, 10, 20]}}"
+        wx:key="*this"
+        bindtap="onQuickAmount"
+        data-amount="{{item}}"
+      >¥{{item}}</view>
+    </view>
+  </view>
+
+  <!-- 确认扣款 -->
+  <button
+    class="btn-deduct"
+    bindtap="onDeduct"
+    disabled="{{submitting}}"
+    loading="{{submitting}}"
+  >
+    {{ submitting ? '处理中…' : '确认扣款' }}
+  </button>
+
+  <view class="deduct-tip">⚠️ 扣款后不可撤销，请与居民确认金额无误后再操作</view>
+</view>
