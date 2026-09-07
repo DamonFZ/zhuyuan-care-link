@@ -5,29 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
-
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
-class VolunteerRecord extends Model
+
+class VolunteerAttendance extends Model
 {
     use HasFactory, LogsActivity;
 
     protected $fillable = [
-        "user_id",
-        "title",
-        "base_hours",
-        "multiplier",
-        "final_hours",
-        "volunteer_service_type_id",
-        "reward_points",
-        "status",
+        'user_id',
+        'volunteer_activity_id',
+        'check_in_time',
+        'check_out_time',
+        'status',
     ];
 
     protected $casts = [
-        "base_hours"   => "decimal:2",
-        "multiplier"   => "decimal:1",
-        "final_hours"  => "decimal:1",
+        'check_in_time'  => 'datetime',
+        'check_out_time' => 'datetime',
     ];
 
     public function getActivitylogOptions(): LogOptions
@@ -36,13 +31,14 @@ class VolunteerRecord extends Model
             ->logFillable()
             ->logOnlyDirty();
     }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function volunteerServiceType(): BelongsTo
+    public function volunteerActivity(): BelongsTo
     {
-        return $this->belongsTo(VolunteerServiceType::class);
+        return $this->belongsTo(VolunteerActivity::class);
     }
 }

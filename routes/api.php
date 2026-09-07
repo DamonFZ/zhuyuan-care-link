@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\MerchantController;
@@ -43,4 +44,7 @@ Route::middleware("auth:sanctum")->group(function () {
     Route::post('/qrcode/resolve', [QrCodeController::class, 'resolve']);
     // 商户：执行扣款（内部调用 $user->modifyPoints，行锁+余额校验）
     Route::post('/merchant/deduct', [MerchantController::class, 'deduct']);
+
+    // ===== 志愿活动扫码签到/签退 + 自动结算 =====
+    Route::post('/activity/scan', [ActivityController::class, 'scan']);
 });

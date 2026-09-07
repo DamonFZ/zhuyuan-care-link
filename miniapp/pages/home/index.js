@@ -135,4 +135,61 @@ Page({
       })
       .finally(() => wx.hideLoading());
   },
+
+  // 居民 → 志愿活动扫码签到 / 签退
+  onScanActivity() {
+    wx.scanCode({
+      onlyFromCamera: true,
+      scanType: ['qrCode'],
+      success: (res) => {
+        const qrcodeToken = res.result;
+        if (!qrcodeToken) {
+          wx.showToast({ title: '未识别到活动二维码', icon: 'none' });
+          return;
+        }
+        this._submitActivityScan(qrcodeToken);
+      },
+      fail: (err) => {
+        if (err && /cancel/i.test(err.errMsg || '')) return;
+        wx.showToast({ title: '扫码失败：' + (err.errMsg || 'unknown'), icon: 'none' });
+      },
+    });
+  },
+
+  // 调用后端扫码打卡接口，根据 type 弹出签到/签退提示
+  _submitActivityScan(qrcodeToken) {
+    wx.showLoading({ title: '处理中…', mask: true });
+    request.post('/api/activity/scan', { qrcode_token: qrcodeToken })
+      .then((res) => {
+        const data = res.data || {};
+        if (data.type === 'check_in') {
+          wx.showModal({
+            title: '签到成功',
+            content: '您已成功签到，祝您服务顺利！',
+            showCancel: false,
+            confirmText: '好的',
+          });
+        } else if (data.type === 'check_out') {
+          const hours = Number(data.hours || 0).toFixed(2);
+          const points = Number(data.points || 0).toFixed(2);
+
+          // 签退成功 → 同步更新本地消费金缓存（首页数字即时刷新）
+          const currentPoints = Number(app.globalData.points || 0);
+          const newPoints = currentPoints + Number(data.points || 0);
+          app.setPoints(newPoints);
+
+          wx.showModal({
+            title: '签退成功',
+            content: `本次服务 ${hours} 小时，获得 ${points} 消费金，已入账。感谢您的付出！`,
+            showCancel: false,
+            confirmText: '好的',
+          });
+        }
+      })
+      .catch((err) => {
+        // 后端返回的业务错误（如活动停用、时长过短）已由 request 统一 toast
+        console.warn('[home] activity scan fail:', err);
+      })
+      .finally(() => wx.hideLoading());
+  },
 });

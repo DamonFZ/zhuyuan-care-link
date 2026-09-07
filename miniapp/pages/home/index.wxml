@@ -77,6 +77,13 @@
           <view class="grid-desc">向商户展示动态码</view>
         </view>
 
+        <!-- 活动打卡 -->
+        <view class="grid-card" bindtap="onScanActivity" hover-class="grid-card-hover">
+          <view class="grid-icon grid-icon-primary">✅</view>
+          <view class="grid-title">活动打卡</view>
+          <view class="grid-desc">扫码签到 / 签退</view>
+        </view>
+
       </view>
     </view>
 
