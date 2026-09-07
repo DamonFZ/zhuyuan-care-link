@@ -75,6 +75,19 @@ class VolunteerAttendanceResource extends Resource
                     ->label('签退时间')
                     ->dateTime('Y-m-d H:i:s')
                     ->placeholder('未签退'),
+                Tables\Columns\TextColumn::make('service_hours')
+                    ->label('服务时长')
+                    ->state(function ($record) {
+                        if (!$record->check_in_time || !$record->check_out_time) {
+                            return '-';
+                        }
+                        $checkin  = \Carbon\Carbon::parse($record->check_in_time);
+                        $checkout = \Carbon\Carbon::parse($record->check_out_time);
+                        $hours    = round($checkout->diffInMinutes($checkin) / 60, 2);
+                        return $hours > 0 ? $hours . ' 小时' : '-';
+                    })
+                    ->badge()
+                    ->color('info'),
                 Tables\Columns\TextColumn::make('status')
                     ->label('状态')
                     ->badge()
