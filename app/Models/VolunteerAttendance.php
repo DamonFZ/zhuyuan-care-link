@@ -18,6 +18,7 @@ class VolunteerAttendance extends Model
         'check_in_time',
         'check_out_time',
         'status',
+        'remark',
     ];
 
     protected $casts = [
@@ -37,8 +38,11 @@ class VolunteerAttendance extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function volunteerActivity(): BelongsTo
+    /**
+     * 关联所属志愿活动（关系名用 activity，便于 Filament 以 activity.title 访问）
+     */
+    public function activity(): BelongsTo
     {
-        return $this->belongsTo(VolunteerActivity::class);
+        return $this->belongsTo(VolunteerActivity::class, 'volunteer_activity_id');
     }
 }
