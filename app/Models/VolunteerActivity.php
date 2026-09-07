@@ -17,12 +17,16 @@ class VolunteerActivity extends Model
     protected $fillable = [
         'title',
         'volunteer_service_type_id',
+        'activity_date',
+        'max_hours',
         'status',
         'qrcode_token',
     ];
 
     protected $casts = [
-        'status' => 'boolean',
+        'status'        => 'boolean',
+        'activity_date' => 'date',
+        'max_hours'     => 'decimal:2',
     ];
 
     public function getActivitylogOptions(): LogOptions

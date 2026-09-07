@@ -44,6 +44,16 @@ class VolunteerActivityResource extends Resource
                             ->searchable()
                             ->preload()
                             ->required(),
+                        Forms\Components\DatePicker::make('activity_date')
+                            ->label('活动日期')
+                            ->required()
+                            ->default(now()),
+                        Forms\Components\TextInput::make('max_hours')
+                            ->label('单场最大工时')
+                            ->numeric()
+                            ->default(4)
+                            ->suffix('小时')
+                            ->helperText('防挂机机制：若实际扫码时长超出此值，将按此上限结算'),
                         Forms\Components\Toggle::make('status')
                             ->label('是否启用')
                             ->default(true)
@@ -67,6 +77,14 @@ class VolunteerActivityResource extends Resource
                     ->label('岗位类型')
                     ->badge()
                     ->placeholder('未设置'),
+                Tables\Columns\TextColumn::make('activity_date')
+                    ->label('活动日期')
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('max_hours')
+                    ->label('工时上限')
+                    ->suffix(' 小时')
+                    ->placeholder('4.00'),
                 Tables\Columns\IconColumn::make('status')
                     ->label('启用')
                     ->boolean(),
