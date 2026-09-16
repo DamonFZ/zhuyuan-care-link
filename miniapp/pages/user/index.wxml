@@ -1,5 +1,5 @@
 <view class="page">
-  <!-- 顶部绿色高亮区（用户资料 + 核心资产数据） -->
+  <!-- 顶部深灰蓝沉浸式头部（用户资料 + 核心资产数据） -->
   <view class="header-bg">
     <view class="user-profile">
       <image

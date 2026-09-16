@@ -1,7 +1,7 @@
 {
   "navigationBarTitleText": "出示核销码",
-  "navigationBarBackgroundColor": "#ffffff",
-  "navigationBarTextStyle": "black",
+  "navigationBarBackgroundColor": "#3b6291",
+  "navigationBarTextStyle": "white",
   "backgroundColor": "#f7f8fa",
   "disableScroll": true
 }

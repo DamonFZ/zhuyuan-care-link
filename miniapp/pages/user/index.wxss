@@ -1,14 +1,14 @@
 /* ===== pages/user/index.wxss（补充全局 app.wxss 没覆盖的） ===== */
 
-/* 顶部用户资料区（纯白卡片，替代旧渐变色块） */
+/* 顶部用户资料区（沉浸式深灰蓝头部） */
 .header-bg {
   margin: 0 -32rpx 0;      /* 抵消 .page padding，左右贯通 */
-  padding: 48rpx 40rpx 40rpx;
-  background: #ffffff;
-  border-bottom-left-radius: 16rpx;
-  border-bottom-right-radius: 16rpx;
-  color: var(--text-main);
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  padding: 56rpx 40rpx 48rpx;
+  background: var(--primary-color);
+  border-bottom-left-radius: 40rpx;
+  border-bottom-right-radius: 40rpx;
+  color: #ffffff;
+  box-shadow: 0 8rpx 24rpx rgba(59, 98, 145, 0.18);
 }
 
 /* 上部：用户资料（头像 + 姓名/标签） */
@@ -20,9 +20,9 @@
   width: 136rpx;
   height: 136rpx;
   border-radius: 50%;
-  border: 4rpx solid #ffffff;
-  background: #fff;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+  border: 4rpx solid rgba(255, 255, 255, 0.6);
+  background: #ffffff;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.15);
   flex-shrink: 0;
 }
 .profile-info {
@@ -31,7 +31,7 @@
   min-width: 0;
 }
 .profile-info .name {
-  color: var(--text-main);
+  color: #ffffff;
   font-size: 40rpx;
   font-weight: 700;
   letter-spacing: 1rpx;
@@ -46,32 +46,32 @@
   gap: 12rpx;
 }
 .profile-tag {
-  background: var(--primary-light);
-  color: var(--primary-color);
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
   font-size: 22rpx;
   padding: 6rpx 18rpx;
   border-radius: 999rpx;
 }
 
-/* 下部：核心资产横向双栏（浅蓝底卡片） */
+/* 下部：核心资产横向双栏（磨砂质感） */
 .user-assets {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-top: 40rpx;
-  background: var(--primary-light);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 16rpx;
   padding: 30rpx 0;
 }
 .asset-block {
   flex: 1;
   text-align: center;
-  color: var(--text-main);
+  color: #ffffff;
   min-width: 0;
 }
 .asset-label {
   font-size: 24rpx;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.8);
   margin-bottom: 10rpx;
 }
 .asset-value {
@@ -79,12 +79,12 @@
   font-weight: bold;
   letter-spacing: 1rpx;
   line-height: 1.1;
-  color: var(--primary-color);
+  color: #ffffff;
 }
 .asset-divider {
   width: 1rpx;
   height: 64rpx;
-  background: #d6e4f5;
+  background: rgba(255, 255, 255, 0.2);
   flex-shrink: 0;
 }
 
