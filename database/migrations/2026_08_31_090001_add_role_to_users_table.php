@@ -11,7 +11,6 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->string('role')
                 ->default('resident')
-                ->after('volunteer_level_id')
                 ->comment('角色: resident=社区居民, merchant=核销商户, operator=操作员');
         });
     }
