@@ -51,8 +51,8 @@
         <!-- 空状态：后台未上传轮播图时显示占位 -->
         <swiper-item wx:if="{{slides.length === 0}}">
           <view class="banner-placeholder">
-            <view class="ph-title">竹苑益家人 · 社区公益大盘</view>
-            <view class="ph-sub">志愿服务 · 旧衣回收 · 邻里互助</view>
+            <view class="ph-title">邻舍益家人</view>
+            <view class="ph-sub">We care, we share</view>
           </view>
         </swiper-item>
       </swiper>

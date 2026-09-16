@@ -10,10 +10,10 @@
   display: flex;
   align-items: center;
   background: #ffffff;
-  border-radius: 24rpx;
+  border-radius: 16rpx;
   padding: 32rpx;
-  border: 1rpx solid var(--primary-light);
-  box-shadow: 0 4rpx 20rpx rgba(255, 122, 51, 0.06);
+  border: 1rpx solid #eef0f3;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
 }
 .target-avatar {
   width: 100rpx;
@@ -31,12 +31,12 @@
 .target-name {
   font-size: 34rpx;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--text-main);
 }
 .target-balance {
   margin-top: 8rpx;
   font-size: 26rpx;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 .balance-num {
   color: var(--primary-color);
@@ -48,13 +48,13 @@
 .amount-section {
   margin-top: 36rpx;
   background: #ffffff;
-  border-radius: 24rpx;
+  border-radius: 16rpx;
   padding: 36rpx 32rpx;
-  border: 1rpx solid var(--primary-light);
+  border: 1rpx solid #eef0f3;
 }
 .amount-label {
   font-size: 28rpx;
-  color: #9a3412;
+  color: var(--primary-color);
   font-weight: 700;
   margin-bottom: 20rpx;
 }
@@ -74,13 +74,13 @@
   flex: 1;
   font-size: 72rpx;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--text-main);
   letter-spacing: 2rpx;
 }
 .amount-hint {
   margin-top: 16rpx;
   font-size: 24rpx;
-  color: #9ca3af;
+  color: var(--text-muted);
 }
 .quick-amount {
   display: flex;
@@ -104,13 +104,13 @@
   width: 100%;
   min-height: 96rpx;
   line-height: 96rpx;
-  border-radius: 999rpx;
-  background: var(--primary-gradient);
+  border-radius: 16rpx;
+  background: var(--primary-color);
   color: #ffffff !important;
   font-size: 34rpx;
   font-weight: 700;
   letter-spacing: 4rpx;
-  box-shadow: 0 12rpx 30rpx rgba(255, 122, 51, 0.3);
+  box-shadow: 0 4rpx 16rpx rgba(59, 98, 145, 0.2);
   border: none;
 }
 .btn-deduct[disabled] {

@@ -1,15 +1,14 @@
 /* ===== pages/user/index.wxss（补充全局 app.wxss 没覆盖的） ===== */
 
-/* 顶部暖橙高亮区（含用户资料 + 资产摘要） */
+/* 顶部用户资料区（纯白卡片，替代旧渐变色块） */
 .header-bg {
   margin: 0 -32rpx 0;      /* 抵消 .page padding，左右贯通 */
   padding: 48rpx 40rpx 40rpx;
-  background: var(--primary-color);
-  background: var(--primary-gradient);
-  border-bottom-left-radius: 32rpx;
-  border-bottom-right-radius: 32rpx;
-  color: #ffffff;
-  box-shadow: 0 8rpx 24rpx rgba(255, 122, 51, 0.22);
+  background: #ffffff;
+  border-bottom-left-radius: 16rpx;
+  border-bottom-right-radius: 16rpx;
+  color: var(--text-main);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
 }
 
 /* 上部：用户资料（头像 + 姓名/标签） */
@@ -23,7 +22,7 @@
   border-radius: 50%;
   border: 4rpx solid #ffffff;
   background: #fff;
-  box-shadow: 0 6rpx 24rpx rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
   flex-shrink: 0;
 }
 .profile-info {
@@ -32,7 +31,7 @@
   min-width: 0;
 }
 .profile-info .name {
-  color: #ffffff;
+  color: var(--text-main);
   font-size: 40rpx;
   font-weight: 700;
   letter-spacing: 1rpx;
@@ -47,33 +46,32 @@
   gap: 12rpx;
 }
 .profile-tag {
-  background: rgba(255, 255, 255, 0.15);
-  color: rgba(255, 255, 255, 0.85);
+  background: var(--primary-light);
+  color: var(--primary-color);
   font-size: 22rpx;
   padding: 6rpx 18rpx;
   border-radius: 999rpx;
-  backdrop-filter: blur(2rpx);
 }
 
-/* 下部：核心资产横向双栏 */
+/* 下部：核心资产横向双栏（浅蓝底卡片） */
 .user-assets {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-top: 40rpx;
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--primary-light);
   border-radius: 16rpx;
   padding: 30rpx 0;
 }
 .asset-block {
   flex: 1;
   text-align: center;
-  color: #ffffff;
+  color: var(--text-main);
   min-width: 0;
 }
 .asset-label {
   font-size: 24rpx;
-  opacity: 0.8;
+  color: var(--text-muted);
   margin-bottom: 10rpx;
 }
 .asset-value {
@@ -81,30 +79,30 @@
   font-weight: bold;
   letter-spacing: 1rpx;
   line-height: 1.1;
-  color: #ffffff;
+  color: var(--primary-color);
 }
 .asset-divider {
   width: 1rpx;
   height: 64rpx;
-  background: rgba(255, 255, 255, 0.3);
+  background: #d6e4f5;
   flex-shrink: 0;
 }
 
-/* 菜单列表（顺滑衔接顶部绿底） */
+/* 菜单列表（白色卡片） */
 .menu-card {
-  margin-top: 44rpx;
+  margin-top: 28rpx;
   background: #ffffff;
-  border-radius: 20rpx;
+  border-radius: 16rpx;
   padding: 0 32rpx;
-  border: 1rpx solid var(--primary-light);
+  border: 1rpx solid #eef0f3;
   overflow: hidden;
-  box-shadow: 0 4rpx 24rpx rgba(255, 122, 51, 0.05);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
 }
 .menu-item {
   display: flex;
   align-items: center;
   padding: 28rpx 0;
-  border-bottom: 1rpx solid var(--primary-light);
+  border-bottom: 1rpx solid #eef0f3;
 }
 .menu-item:last-child {
   border-bottom: 0;
@@ -127,12 +125,12 @@
 }
 .menu-label {
   flex: 1;
-  color: #1f2937;
+  color: var(--text-main);
   font-size: 30rpx;
   font-weight: 500;
 }
 .menu-arrow {
-  color: #9ca3af;
+  color: var(--text-muted);
   font-size: 44rpx;
   line-height: 1;
   font-weight: 300;

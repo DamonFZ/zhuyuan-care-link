@@ -55,7 +55,7 @@ Page({
         title: '余额不足',
         content: `居民当前余额 ¥${this.data.targetUser.points}，无法扣款 ¥${amount}`,
         showCancel: false,
-        confirmColor: '#ff7a33',
+        confirmColor: '#3b6291',
       });
       return;
     }

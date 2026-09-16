@@ -81,7 +81,7 @@ Page({
     wx.showModal({
       title: '退出登录？',
       content: '退出后下次打开小程序需重新授权微信登录。',
-      confirmColor: '#ff7a33',
+      confirmColor: '#3b6291',
       success: (r) => {
         if (!r.confirm) return;
         const app = getApp();

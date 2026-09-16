@@ -1,5 +1,5 @@
 /**
- * CareLink 竹苑益家人 小程序启动基座
+ * CareLink 邻舍益家人 小程序启动基座
  * - onLaunch: 静默拉起微信 wx.login → 换 code → 调后端 /wechat/login → 下发 Sanctum Token
  * - 登录成功：把 token / role / points / volunteerLevel / userInfo 完整写入 Storage + 挂 globalData
  * - 401 / 登录失败：上层业务可通过 globalData.loginReady / loginError 判断并做降级

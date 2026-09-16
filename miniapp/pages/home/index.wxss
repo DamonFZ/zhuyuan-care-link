@@ -1,11 +1,7 @@
 /* ============================================================
  * pages/home/index.wxss  —— 首页大盘
- * 色彩策略：复用全局 --primary-color / --primary-light
+ * 色彩策略：复用全局 --primary-color / --primary-light（极简灰蓝）
  * ==========================================================*/
-
-page {
-  background: #fff8f3;
-}
 
 .home-page {
   padding-bottom: 48rpx;
@@ -18,15 +14,15 @@ page {
 .banner {
   width: 100%;
   height: 360rpx;
-  border-radius: 24rpx;
+  border-radius: 16rpx;
   overflow: hidden;
-  box-shadow: 0 10rpx 28rpx rgba(255, 122, 51, 0.15);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 .banner-img {
   width: 100%;
   height: 100%;
   display: block;
-  border-radius: 24rpx;
+  border-radius: 16rpx;
 }
 .banner-title {
   position: absolute;
@@ -36,13 +32,13 @@ page {
   color: #fff;
   font-size: 28rpx;
   font-weight: 600;
-  border-bottom-left-radius: 24rpx;
-  border-bottom-right-radius: 24rpx;
+  border-bottom-left-radius: 16rpx;
+  border-bottom-right-radius: 16rpx;
 }
 .banner-placeholder {
   width: 100%; height: 100%;
-  background: var(--primary-gradient);
-  border-radius: 24rpx;
+  background: var(--primary-color);
+  border-radius: 16rpx;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -52,7 +48,7 @@ page {
   box-sizing: border-box;
 }
 .ph-title { font-size: 40rpx; font-weight: 800; margin-bottom: 12rpx; }
-.ph-sub   { font-size: 26rpx; opacity: 0.92; }
+.ph-sub   { font-size: 26rpx; opacity: 0.92; letter-spacing: 1rpx; }
 
 /* ---------- 宫格区 ---------- */
 .grid-section {
@@ -61,7 +57,7 @@ page {
 .section-title {
   font-size: 30rpx;
   font-weight: 700;
-  color: #9a3412;
+  color: var(--text-main);
   padding: 12rpx 4rpx 20rpx;
 }
 .grid-2 {
@@ -73,10 +69,10 @@ page {
 .grid-card {
   flex: 1;
   background: #ffffff;
-  border: 1rpx solid var(--primary-light);
-  border-radius: 24rpx;
+  border: 1rpx solid #eef0f3;
+  border-radius: 16rpx;
   padding: 32rpx 24rpx;
-  box-shadow: 0 6rpx 20rpx rgba(255, 122, 51, 0.08);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -85,7 +81,7 @@ page {
 }
 .grid-card-hover {
   transform: scale(0.98);
-  box-shadow: 0 2rpx 10rpx rgba(255, 122, 51, 0.06);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
   opacity: 0.95;
 }
 .grid-icon {
@@ -94,30 +90,30 @@ page {
   line-height: 80rpx;
   text-align: center;
   font-size: 44rpx;
-  border-radius: 20rpx;
+  border-radius: 16rpx;
   margin-bottom: 20rpx;
 }
 .grid-icon-primary {
   background: var(--primary-light);
 }
 .grid-icon-secondary {
-  background: #fff4e0;
+  background: #eef0f3;
 }
 .grid-title {
   font-size: 30rpx;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--text-main);
   margin-bottom: 8rpx;
 }
 .grid-desc {
   font-size: 24rpx;
-  color: #6b7280;
+  color: var(--text-muted);
   line-height: 1.5;
 }
 
 .home-tips {
   margin: 40rpx 28rpx 0;
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 24rpx;
   line-height: 1.7;
 }
@@ -139,24 +135,24 @@ page {
 .merchant-hello {
   font-size: 40rpx;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--text-main);
 }
 .merchant-sub {
   margin-top: 12rpx;
   font-size: 26rpx;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .scan-btn {
   width: 480rpx;
   height: 480rpx;
   border-radius: 50%;
-  background: var(--primary-gradient);
+  background: var(--primary-color);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 20rpx 60rpx rgba(255, 122, 51, 0.4);
+  box-shadow: 0 12rpx 40rpx rgba(59, 98, 145, 0.28);
   transition: transform 0.15s;
 }
 .scan-btn-hover {
@@ -181,6 +177,6 @@ page {
 .merchant-tip {
   margin-top: 64rpx;
   font-size: 26rpx;
-  color: #9ca3af;
+  color: var(--text-muted);
   text-align: center;
 }

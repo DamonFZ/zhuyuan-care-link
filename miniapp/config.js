@@ -1,5 +1,5 @@
 /**
- * CareLink 竹苑益家人 小程序基座配置
+ * CareLink 邻舍益家人 小程序基座配置
  * 所有 API 请求地址与全局常量集中在此处维护
  */
 const config = {
