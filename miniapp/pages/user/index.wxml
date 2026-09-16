@@ -72,7 +72,5 @@
     </view>
   </block>
 
-  <view class="tips" style="color: var(--text-muted);">
-    Tips：消费金来源于「志愿服务」「旧衣回收」等公益活动，可在社区合作商户核销。
-  </view>
+  <view class="user-slogan">We care, we share</view>
 </view>

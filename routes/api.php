@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\Route;
 // ===== 公开路由（无需鉴权）=====
 Route::post("/wechat/login", [AuthController::class, "wechatLogin"]);
 Route::get("/slides",       [HomeController::class, "getSlides"]);
+// 志愿活动列表（首页展示，无需登录）
+Route::get("/activities",   [ActivityController::class, "index"]);
 
 
 // ===== Sanctum 受保护路由 =====
@@ -28,6 +30,10 @@ Route::middleware("auth:sanctum")->group(function () {
     Route::get("/user", function (Request $request) {
         return $request->user();
     });
+
+    // 志愿活动详情（附带当前用户 has_registered）与报名
+    Route::get("/activities/{id}",          [ActivityController::class, "show"]);
+    Route::post("/activities/{id}/register", [ActivityController::class, "register"]);
 
     // 头像上传：返回 { url }
     Route::post('/upload',       [UploadController::class, 'uploadImage']);

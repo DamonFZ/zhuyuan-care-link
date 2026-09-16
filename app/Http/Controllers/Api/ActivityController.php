@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\VolunteerActivity;
 use App\Models\VolunteerAttendance;
 use App\Models\VolunteerRecord;
+use App\Models\VolunteerRegistration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -171,5 +172,148 @@ class ActivityController extends Controller
                 ],
             ], 200);
         });
+    }
+
+    /**
+     * GET /api/activities —— 活动列表
+     * 仅返回启用(status=true)的活动，按 activity_date 降序，分页。
+     */
+    public function index(Request $request)
+    {
+        $perPage = (int) $request->input('per_page', 10);
+
+        $activities = VolunteerActivity::query()
+            ->where('status', true)
+            ->orderBy('activity_date', 'desc')
+            ->orderBy('id', 'desc')
+            ->paginate($perPage);
+
+        // 手动组装分页结构，附带 is_ended 动态属性
+        $items = $activities->getCollection()->map(function (VolunteerActivity $a) {
+            return [
+                'id'             => $a->id,
+                'title'          => $a->title,
+                'activity_date'  => $a->activity_date ? $a->activity_date->toDateString() : null,
+                'max_hours'      => (float) $a->max_hours,
+                'is_ended'       => $a->is_ended,
+            ];
+        })->values();
+
+        return response()->json([
+            'code'    => 200,
+            'message' => 'success',
+            'data'    => [
+                'items'           => $items,
+                'current_page'    => $activities->currentPage(),
+                'per_page'        => $activities->perPage(),
+                'total'           => $activities->total(),
+                'last_page'       => $activities->lastPage(),
+                'has_more_pages'  => $activities->hasMorePages(),
+            ],
+        ], 200);
+    }
+
+    /**
+     * GET /api/activities/{id} —— 活动详情
+     * 若用户已登录，附带返回 has_registered（当前用户是否已报名）。
+     */
+    public function show(int $id)
+    {
+        $activity = VolunteerActivity::query()
+            ->where('status', true)
+            ->find($id);
+
+        if (!$activity) {
+            return response()->json([
+                'code'    => 404,
+                'message' => '活动不存在或已停用',
+            ], 404);
+        }
+
+        $userId = Auth::id();
+        $hasRegistered = false;
+        if ($userId) {
+            $hasRegistered = VolunteerRegistration::where('user_id', $userId)
+                ->where('volunteer_activity_id', $activity->id)
+                ->where('status', 'registered')
+                ->exists();
+        }
+
+        return response()->json([
+            'code'    => 200,
+            'message' => 'success',
+            'data'    => [
+                'id'              => $activity->id,
+                'title'           => $activity->title,
+                'activity_date'   => $activity->activity_date ? $activity->activity_date->toDateString() : null,
+                'max_hours'       => (float) $activity->max_hours,
+                'is_ended'        => $activity->is_ended,
+                'has_registered'  => $hasRegistered,
+            ],
+        ], 200);
+    }
+
+    /**
+     * POST /api/activities/{id}/register —— 用户报名活动
+     * 校验：活动未结束 + 未重复报名，然后写入 volunteer_registrations。
+     */
+    public function register(int $id)
+    {
+        $userId = Auth::id();
+
+        $activity = VolunteerActivity::query()
+            ->where('status', true)
+            ->find($id);
+
+        if (!$activity) {
+            return response()->json([
+                'code'    => 404,
+                'message' => '活动不存在或已停用',
+            ], 404);
+        }
+
+        // 1) 活动已结束则不允许报名
+        if ($activity->is_ended) {
+            return response()->json([
+                'code'    => 400,
+                'message' => '活动已结束，无法报名',
+            ], 400);
+        }
+
+        // 2) 重复报名校验
+        $exists = VolunteerRegistration::where('user_id', $userId)
+            ->where('volunteer_activity_id', $activity->id)
+            ->where('status', 'registered')
+            ->exists();
+
+        if ($exists) {
+            return response()->json([
+                'code'    => 400,
+                'message' => '您已报名该活动，请勿重复报名',
+            ], 400);
+        }
+
+        // 3) 创建报名记录（unique 索引兜底防并发）
+        try {
+            VolunteerRegistration::create([
+                'user_id'               => $userId,
+                'volunteer_activity_id' => $activity->id,
+                'status'                => 'registered',
+            ]);
+        } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
+            return response()->json([
+                'code'    => 400,
+                'message' => '您已报名该活动，请勿重复报名',
+            ], 400);
+        }
+
+        return response()->json([
+            'code'    => 200,
+            'message' => '报名成功',
+            'data'    => [
+                'activity_id' => $activity->id,
+                'status'      => 'registered',
+            ],
+        ], 200);
     }
 }

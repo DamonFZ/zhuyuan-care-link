@@ -10,6 +10,7 @@ const app = getApp();
 Page({
   data: {
     slides: [],
+    activities: [],
     role: 'resident',
     userInfo: {},
     todayCount: 0,
@@ -18,18 +19,21 @@ Page({
   onLoad() {
     this._syncRole();
     this.loadSlides();
+    this.loadActivities();
   },
 
   onShow() {
     this._syncRole();
-    // 居民端每次回首页重新拉轮播
+    // 居民端每次回首页重新拉轮播 + 活动
     if (this.data.role !== 'merchant') {
       this.loadSlides();
+      this.loadActivities();
     }
   },
 
   onPullDownRefresh() {
-    this.loadSlides(() => wx.stopPullDownRefresh());
+    this.loadSlides(() => {});
+    this.loadActivities(() => wx.stopPullDownRefresh());
   },
 
   _syncRole() {
@@ -56,6 +60,33 @@ Page({
       .finally(() => {
         done && done();
       });
+  },
+
+  /** 加载近期活动列表（公开接口） */
+  loadActivities(done) {
+    request.get('/api/activities', {}, { auth: false })
+      .then((res) => {
+        const data = res.data || {};
+        this.setData({
+          activities: Array.isArray(data.items) ? data.items : [],
+        });
+      })
+      .catch((err) => {
+        console.warn('[home] load activities failed:', err && err.message);
+        this.setData({ activities: [] });
+      })
+      .finally(() => {
+        done && done();
+      });
+  },
+
+  /** 点击活动卡片 → 跳转详情页 */
+  onActivityTap(e) {
+    const id = e.currentTarget.dataset.id;
+    if (!id) return;
+    wx.navigateTo({
+      url: `/pages/activity/detail?id=${id}`,
+    });
   },
 
   // 轮播图点击（预留）

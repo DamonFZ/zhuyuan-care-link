@@ -1,0 +1,54 @@
+<view class="detail-page">
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="loading-wrap">
+    <view class="loading-text">加载中…</view>
+  </view>
+
+  <!-- 加载失败 -->
+  <view wx:elif="{{loadError}}" class="loading-wrap">
+    <view class="loading-text">{{loadError}}</view>
+  </view>
+
+  <!-- 活动详情 -->
+  <block wx:else>
+    <view class="detail-card">
+      <view class="detail-title">{{activity.title}}</view>
+
+      <view class="info-row">
+        <view class="info-label">📆 活动日期</view>
+        <view class="info-value">{{activity.activity_date || '日期待定'}}</view>
+      </view>
+
+      <view class="info-row">
+        <view class="info-label">⏱ 单场最大工时</view>
+        <view class="info-value">{{activity.max_hours}} 小时</view>
+      </view>
+
+      <view class="info-row">
+        <view class="info-label">📌 活动状态</view>
+        <view class="info-value {{activity.is_ended ? 'text-muted' : 'text-primary'}}">
+          {{activity.is_ended ? '已结束' : '报名中'}}
+        </view>
+      </view>
+    </view>
+
+    <view class="detail-tip">
+      报名后请按时到场，现场扫码签到 / 签退即可累计志愿时长与消费金。
+    </view>
+  </block>
+
+  <!-- 底部固定操作栏 -->
+  <view class="bottom-bar">
+    <button
+      class="action-btn {{btnDisabled ? 'btn-disabled' : ''}}"
+      bindtap="onRegister"
+      disabled="{{btnDisabled || registering}}"
+      loading="{{registering}}"
+    >
+      {{btnText}}
+    </button>
+  </view>
+
+  <!-- 全局隐私授权弹窗 -->
+  <privacy-popup id="privacy-popup"></privacy-popup>
+</view>

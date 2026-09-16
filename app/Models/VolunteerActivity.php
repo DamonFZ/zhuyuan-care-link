@@ -29,6 +29,22 @@ class VolunteerActivity extends Model
         'max_hours'     => 'decimal:2',
     ];
 
+    /**
+     * API 序列化时附带的动态属性
+     */
+    protected $appends = ['is_ended'];
+
+    /**
+     * 动态属性：活动是否已结束（活动日期早于今天）
+     */
+    public function getIsEndedAttribute(): bool
+    {
+        if (!$this->activity_date) {
+            return false;
+        }
+        return $this->activity_date->toDateString() < now()->toDateString();
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
@@ -56,5 +72,13 @@ class VolunteerActivity extends Model
     public function attendances(): HasMany
     {
         return $this->hasMany(VolunteerAttendance::class);
+    }
+
+    /**
+     * 活动的报名记录
+     */
+    public function registrations(): HasMany
+    {
+        return $this->hasMany(VolunteerRegistration::class);
     }
 }

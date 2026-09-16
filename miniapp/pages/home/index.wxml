@@ -96,7 +96,30 @@
       </view>
     </view>
 
-    <view class="home-tips">* 消费金来源于「志愿服务」「旧衣回收」等公益活动，可在社区合作商户核销。</view>
+    <!-- 近期活动 -->
+    <view class="activity-section" wx:if="{{activities.length > 0}}">
+      <view class="section-title">📅 近期活动</view>
+      <view class="activity-list">
+        <view
+          class="activity-card"
+          wx:for="{{activities}}"
+          wx:key="id"
+          data-id="{{item.id}}"
+          bindtap="onActivityTap"
+          hover-class="activity-card-hover"
+        >
+          <view class="activity-main">
+            <view class="activity-title">{{item.title}}</view>
+            <view class="activity-date">📆 {{item.activity_date || '日期待定'}}</view>
+          </view>
+          <view class="activity-status {{item.is_ended ? 'status-ended' : 'status-open'}}">
+            {{item.is_ended ? '已结束' : '报名中'}}
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="home-slogan">We care, we share</view>
   </block>
 
   <!-- 全局隐私授权弹窗 -->
