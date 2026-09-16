@@ -1,0 +1,86 @@
+<view class="recycle-page">
+
+  <!-- 预估重量选择 -->
+  <view class="form-card">
+    <view class="card-title">预估重量</view>
+    <view class="weight-options">
+      <view
+        class="weight-btn {{estimatedWeight === '3~20kg' ? 'active' : ''}}"
+        bindtap="onSelectWeight"
+        data-value="3~20kg"
+      >
+        <view class="weight-main">3~20kg</view>
+        <view class="weight-sub">约 8~50 件</view>
+      </view>
+      <view
+        class="weight-btn {{estimatedWeight === '>20kg' ? 'active' : ''}}"
+        bindtap="onSelectWeight"
+        data-value=">20kg"
+      >
+        <view class="weight-main">＞20kg</view>
+        <view class="weight-sub">约 50 件以上</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 上门时间选择 -->
+  <view class="form-card">
+    <view class="card-title">上门时间</view>
+    <picker mode="date" value="{{appointmentDate}}" bindchange="onDateChange">
+      <view class="picker-row">
+        <text class="picker-label">日期</text>
+        <view class="picker-value">
+          <text>{{appointmentDate || '请选择日期'}}</text>
+          <text class="picker-icon">📅</text>
+        </view>
+      </view>
+    </picker>
+    <picker mode="time" value="{{appointmentTime}}" bindchange="onTimeChange">
+      <view class="picker-row">
+        <text class="picker-label">时段</text>
+        <view class="picker-value">
+          <text>{{appointmentTime || '请选择时间'}}</text>
+          <text class="picker-icon">🕐</text>
+        </view>
+      </view>
+    </picker>
+  </view>
+
+  <!-- 图片上传 -->
+  <view class="form-card">
+    <view class="card-title">物品照片（选填）</view>
+    <view class="image-list">
+      <view class="image-item" wx:for="{{images}}" wx:key="*this">
+        <image class="image-thumb" src="{{item}}" mode="aspectFill"></image>
+        <view class="image-delete" catchtap="onDeleteImage" data-index="{{index}}">✕</view>
+      </view>
+      <view class="image-add" bindtap="onChooseImages" wx:if="{{images.length < 9}}">
+        <view class="image-add-icon">+</view>
+        <view class="image-add-text">添加照片</view>
+      </view>
+    </view>
+    <view wx:if="{{uploading}}" class="upload-tip">图片上传中…</view>
+  </view>
+
+  <!-- 备注 -->
+  <view class="form-card">
+    <view class="card-title">备注（选填）</view>
+    <textarea
+      class="remark-input"
+      placeholder="如：楼栋单元、取件位置等特殊说明"
+      maxlength="200"
+      value="{{remark}}"
+      bindinput="onRemarkInput"
+    ></textarea>
+  </view>
+
+  <!-- 底部提交按钮 -->
+  <view class="submit-wrap">
+    <button
+      class="submit-btn {{submitting ? 'disabled' : ''}}"
+      bindtap="onSubmit"
+      disabled="{{submitting}}"
+    >{{submitting ? '提交中…' : '提交'}}</button>
+  </view>
+
+</view>

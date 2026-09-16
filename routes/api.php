@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\MerchantController;
 use App\Http\Controllers\Api\QrCodeController;
+use App\Http\Controllers\Api\RecycleController;
 use App\Http\Controllers\Api\UploadController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
@@ -53,4 +54,7 @@ Route::middleware("auth:sanctum")->group(function () {
 
     // ===== 志愿活动扫码签到/签退 + 自动结算 =====
     Route::post('/activity/scan', [ActivityController::class, 'scan']);
+
+    // ===== 上门回收预约 =====
+    Route::post('/recycle/reserve', [RecycleController::class, 'reserve']);
 });

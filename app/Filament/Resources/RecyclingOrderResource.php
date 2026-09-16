@@ -30,22 +30,43 @@ class RecyclingOrderResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make("订单信息")
+                Forms\Components\Section::make("预约信息")
                     ->schema([
                         Forms\Components\Select::make("user_id")
                             ->label("用户")
                             ->relationship("user", "name")
                             ->searchable()
                             ->required(),
-                        Forms\Components\TextInput::make("weight")
-                            ->label("重量(斤)")
+                        Forms\Components\TextInput::make("estimated_weight")
+                            ->label("预估重量")
+                            ->placeholder("如 3~20kg")
+                            ->maxLength(50),
+                        Forms\Components\DateTimePicker::make("appointment_time")
+                            ->label("预约上门时间"),
+                        Forms\Components\FileUpload::make("images")
+                            ->label("上传图片")
+                            ->multiple()
+                            ->image()
+                            ->imageEditor()
+                            ->directory("recycling")
+                            ->storeFileNamesIn("images"),
+                        Forms\Components\Textarea::make("remark")
+                            ->label("备注")
+                            ->rows(2)
+                            ->maxLength(500),
+                    ])->columns(2),
+
+                Forms\Components\Section::make("回收结算")
+                    ->schema([
+                        Forms\Components\TextInput::make("actual_weight")
+                            ->label("实际称重(斤)")
                             ->numeric()
                             ->inputMode("decimal")
-                            ->required()
                             ->live(debounce: 500)
                             ->afterStateUpdated(function ($set, $state, $get) {
                                 if ($state && $get("reward_type")) {
-                                    $set("reward_amount", round($state * 0.4, 2));
+                                    $set("reward_amount", round((float)$state * 0.4, 2));
+                                    $set("weight", $state);
                                 }
                             }),
                         Forms\Components\Select::make("reward_type")
@@ -57,8 +78,8 @@ class RecyclingOrderResource extends Resource
                             ->default("points")
                             ->required()
                             ->afterStateUpdated(function ($set, $state, $get) {
-                                if ($get("weight")) {
-                                    $set("reward_amount", round($get("weight") * 0.4, 2));
+                                if ($get("actual_weight")) {
+                                    $set("reward_amount", round((float)$get("actual_weight") * 0.4, 2));
                                 }
                             }),
                         Forms\Components\TextInput::make("reward_amount")
@@ -70,11 +91,12 @@ class RecyclingOrderResource extends Resource
                         Forms\Components\Select::make("status")
                             ->label("状态")
                             ->options([
-                                "pending" => "待处理",
-                                "completed" => "已完成",
-                                "cancelled" => "已取消",
+                                "pending"    => "待处理",
+                                "processing" => "处理中",
+                                "completed"  => "已完成",
+                                "cancelled"  => "已取消",
                             ])
-                            ->default("completed")
+                            ->default("pending")
                             ->required(),
                     ])->columns(2),
             ]);
@@ -88,18 +110,23 @@ class RecyclingOrderResource extends Resource
                     ->label("ID")
                     ->sortable(),
                 Tables\Columns\TextColumn::make("user.name")
-                    ->label("用户")
+                    ->label("用户姓名")
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make("weight")
-                    ->label("重量(斤)")
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make("reward_type")
-                    ->label("兑换方式")
+                Tables\Columns\TextColumn::make("estimated_weight")
+                    ->label("预估重量")
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state === "points" ? "积分" : "现金")
-                    ->color(fn ($state) => $state === "points" ? "info" : "success"),
+                    ->color("info")
+                    ->placeholder("未填写"),
+                Tables\Columns\TextColumn::make("appointment_time")
+                    ->label("预约时间")
+                    ->dateTime()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make("actual_weight")
+                    ->label("实际称重")
+                    ->numeric()
+                    ->suffix(" 斤")
+                    ->placeholder("待称重"),
                 Tables\Columns\TextColumn::make("reward_amount")
                     ->label("折算金额")
                     ->money("CNY")
@@ -108,31 +135,37 @@ class RecyclingOrderResource extends Resource
                     ->label("状态")
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        "pending"   => "warning",
-                        "completed" => "success",
-                        "cancelled" => "gray",
-                        "revoked"   => "danger",
-                        default     => "gray",
+                        "pending"    => "warning",
+                        "processing" => "info",
+                        "completed"  => "success",
+                        "cancelled"  => "gray",
+                        "revoked"    => "danger",
+                        default      => "gray",
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        "pending"   => "待处理",
-                        "completed" => "已完成",
-                        "cancelled" => "已取消",
-                        "revoked"   => "已冲销",
-                        default     => $state,
+                        "pending"    => "待处理",
+                        "processing" => "处理中",
+                        "completed"  => "已完成",
+                        "cancelled"  => "已取消",
+                        "revoked"    => "已冲销",
+                        default      => $state,
                     }),
                 Tables\Columns\TextColumn::make("created_at")
                     ->label("创建时间")
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make("reward_type")
-                    ->label("兑换方式")
-                    ->options(["points" => "积分", "cash" => "现金"]),
                 Tables\Filters\SelectFilter::make("status")
                     ->label("状态")
-                    ->options(["pending" => "待处理", "completed" => "已完成", "cancelled" => "已取消", "revoked" => "已冲销"]),
+                    ->options([
+                        "pending"    => "待处理",
+                        "processing" => "处理中",
+                        "completed"  => "已完成",
+                        "cancelled"  => "已取消",
+                        "revoked"    => "已冲销",
+                    ]),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

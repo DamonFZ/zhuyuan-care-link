@@ -136,6 +136,17 @@ Page({
       .finally(() => wx.hideLoading());
   },
 
+  // 居民 → 上门回收预约
+  onRecycleTap() {
+    wx.navigateTo({
+      url: '/pages/recycle/index',
+      fail: (err) => {
+        console.warn('[home] nav recycle fail:', err && err.errMsg);
+        wx.showToast({ title: '功能开发中', icon: 'none' });
+      },
+    });
+  },
+
   // 居民 → 志愿活动扫码签到 / 签退
   onScanActivity() {
     wx.scanCode({

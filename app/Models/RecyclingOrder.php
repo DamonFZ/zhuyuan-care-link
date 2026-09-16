@@ -15,6 +15,11 @@ class RecyclingOrder extends Model
 
     protected $fillable = [
         "user_id",
+        "estimated_weight",
+        "appointment_time",
+        "images",
+        "remark",
+        "actual_weight",
         "weight",
         "reward_type",
         "reward_amount",
@@ -22,8 +27,11 @@ class RecyclingOrder extends Model
     ];
 
     protected $casts = [
-        "weight" => "decimal:2",
-        "reward_amount" => "decimal:2",
+        "images"          => "array",
+        "appointment_time" => "datetime",
+        "actual_weight"   => "decimal:2",
+        "weight"          => "decimal:2",
+        "reward_amount"   => "decimal:2",
     ];
 
     public function getActivitylogOptions(): LogOptions

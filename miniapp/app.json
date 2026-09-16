@@ -4,6 +4,7 @@
     "pages/user/index",
     "pages/points/index",
     "pages/volunteer/index",
+    "pages/recycle/index",
     "pages/user/edit",
     "pages/qrcode/index",
     "pages/merchant/deduct"
