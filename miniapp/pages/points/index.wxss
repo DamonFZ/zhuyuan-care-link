@@ -1,27 +1,104 @@
-.placeholder-page {
-  padding: 80rpx 48rpx;
+/* pages/points/index.wxss —— 消费金流水 */
+page {
+  background: var(--bg-page);
+}
+
+.points-page {
+  padding: 20rpx 0 40rpx;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* 加载 & 空状态 */
+.loading-wrap,
+.empty-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  padding: 160rpx 48rpx;
   text-align: center;
 }
-.ph-emoji {
+.loading-text {
+  color: var(--text-muted);
+  font-size: 28rpx;
+}
+.empty-emoji {
   font-size: 120rpx;
   margin-bottom: 24rpx;
 }
-.ph-title {
-  font-size: 36rpx;
-  color: var(--primary-color);
-  font-weight: 800;
-  margin-bottom: 16rpx;
+.empty-text {
+  font-size: 32rpx;
+  color: var(--text-main);
+  font-weight: 700;
+  margin-bottom: 12rpx;
 }
-.ph-desc {
+.empty-sub {
   font-size: 26rpx;
-  color: #6b7280;
+  color: var(--text-muted);
   line-height: 1.7;
-  margin-bottom: 48rpx;
-  padding: 0 16rpx;
 }
-.btn {
-  min-width: 320rpx;
+
+/* 流水卡片 */
+.tx-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin: 20rpx 24rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  border: 1rpx solid #eef0f3;
+}
+.tx-left {
+  flex: 1;
+  min-width: 0;
+  padding-right: 20rpx;
+}
+.tx-title {
+  font-size: 30rpx;
+  color: var(--text-main);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tx-time {
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: var(--text-muted);
+}
+.tx-right {
+  text-align: right;
+  flex-shrink: 0;
+}
+.tx-amount {
+  font-size: 38rpx;
+  font-weight: 800;
+  line-height: 1.1;
+}
+.tx-amount.amount-in {
+  color: var(--primary-color);   /* 收入：深灰蓝 */
+}
+.tx-amount.amount-out {
+  color: #e74c3c;                /* 支出：警示红 */
+}
+.tx-balance {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: var(--text-muted);
+}
+
+/* 加载更多 */
+.load-more {
+  padding: 32rpx 0 16rpx;
+  text-align: center;
+}
+.load-more-text {
+  font-size: 24rpx;
+  color: var(--text-muted);
+}
+.load-more-text.no-more {
+  opacity: 0.6;
 }

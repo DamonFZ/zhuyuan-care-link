@@ -1,0 +1,143 @@
+/* pages/volunteer/index.wxss —— 志愿服务打卡明细（卡片时间轴风格） */
+page {
+  background: var(--bg-page);
+}
+
+.volunteer-page {
+  padding: 20rpx 0 40rpx;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* 加载 & 空状态 */
+.loading-wrap,
+.empty-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 160rpx 48rpx;
+  text-align: center;
+}
+.loading-text {
+  color: var(--text-muted);
+  font-size: 28rpx;
+}
+.empty-emoji {
+  font-size: 120rpx;
+  margin-bottom: 24rpx;
+}
+.empty-text {
+  font-size: 32rpx;
+  color: var(--text-main);
+  font-weight: 700;
+  margin-bottom: 12rpx;
+}
+.empty-sub {
+  font-size: 26rpx;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+/* 打卡卡片 */
+.att-card {
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin: 20rpx 24rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  border: 1rpx solid #eef0f3;
+}
+
+/* 头部：活动名 + 状态标签 */
+.att-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+.att-title {
+  flex: 1;
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--text-main);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 16rpx;
+}
+.att-status {
+  flex-shrink: 0;
+  font-size: 22rpx;
+  padding: 6rpx 18rpx;
+  border-radius: 999rpx;
+  font-weight: 600;
+}
+.att-status.status-done {
+  background: var(--primary-light);   /* 已签退：浅蓝底 */
+  color: var(--primary-color);
+}
+.att-status.status-doing {
+  background: #fff8e1;                  /* 打卡中：浅黄底 */
+  color: #b8860b;
+}
+
+/* 主体：签到/签退时间 */
+.att-body {
+  padding: 16rpx 0;
+  border-top: 1rpx solid #eef0f3;
+  border-bottom: 1rpx solid #eef0f3;
+}
+.att-row {
+  display: flex;
+  align-items: center;
+  padding: 10rpx 0;
+}
+.att-row-label {
+  width: 100rpx;
+  flex-shrink: 0;
+  font-size: 26rpx;
+  color: var(--text-muted);
+}
+.att-row-value {
+  flex: 1;
+  font-size: 28rpx;
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+/* 底部：服务时长 */
+.att-footer {
+  margin-top: 16rpx;
+  text-align: right;
+}
+.att-hours {
+  display: inline-block;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: var(--primary-color);
+  background: var(--primary-light);
+  padding: 6rpx 18rpx;
+  border-radius: 8rpx;
+}
+
+/* 备注 */
+.att-remark {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* 加载更多 */
+.load-more {
+  padding: 32rpx 0 16rpx;
+  text-align: center;
+}
+.load-more-text {
+  font-size: 24rpx;
+  color: var(--text-muted);
+}
+.load-more-text.no-more {
+  opacity: 0.6;
+}

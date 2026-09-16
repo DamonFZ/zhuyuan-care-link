@@ -1,6 +1,35 @@
-<view class="placeholder-page">
-  <view class="ph-emoji">💸</view>
-  <view class="ph-title">居民消费金模块</view>
-  <view class="ph-desc">Coming Soon — 消费金获取/流水/核销商户兑换记录将在此展示。</view>
-  <button class="btn" bindtap="onBack">← 返回首页</button>
+<view class="points-page">
+  <!-- 加载中 -->
+  <view wx:if="{{loading && list.length === 0}}" class="loading-wrap">
+    <view class="loading-text">加载中…</view>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:elif="{{!loading && list.length === 0}}" class="empty-wrap">
+    <view class="empty-emoji">📭</view>
+    <view class="empty-text">暂无流水记录</view>
+    <view class="empty-sub">完成志愿服务或旧衣回收后，消费金变动将在此展示</view>
+  </view>
+
+  <!-- 流水列表 -->
+  <block wx:else>
+    <view class="tx-card" wx:for="{{list}}" wx:key="id">
+      <view class="tx-left">
+        <view class="tx-title">{{item.event_name}}</view>
+        <view class="tx-time">{{item.created_at}}</view>
+      </view>
+      <view class="tx-right">
+        <view class="tx-amount {{item.amount > 0 ? 'amount-in' : 'amount-out'}}">
+          {{item.amount > 0 ? '+' : ''}}{{item.amount_display}}
+        </view>
+        <view class="tx-balance">余额 ¥{{item.new_points}}</view>
+      </view>
+    </view>
+
+    <!-- 加载更多 / 没有更多 -->
+    <view class="load-more">
+      <view wx:if="{{loadingMore}}" class="load-more-text">加载中…</view>
+      <view wx:elif="{{!hasMore}}" class="load-more-text no-more">— 没有更多了 —</view>
+    </view>
+  </block>
 </view>

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\PointTransaction;
+use App\Models\VolunteerAttendance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -69,6 +71,90 @@ class UserController extends Controller
             'data'    => [
                 'updated_fields' => $dirty,
                 'user'           => $this->serializeUser($user),
+            ],
+        ], 200);
+    }
+
+    /**
+     * 消费金流水（当前用户）
+     * GET /api/user/point-transactions?page=1
+     */
+    public function pointTransactions(Request $request)
+    {
+        $userId = $request->user()->id;
+
+        $paginator = PointTransaction::where('user_id', $userId)
+            ->orderByDesc('created_at')
+            ->paginate(15);
+
+        $items = collect($paginator->items())->map(function ($tx) {
+            return [
+                'id'           => $tx->id,
+                'event_name'   => $tx->event_name,
+                'amount'       => (float) $tx->change_points,   // 正=收入，负=支出
+                'new_points'   => (float) $tx->new_points,
+                'created_at'   => (string) $tx->created_at,
+            ];
+        });
+
+        return response()->json([
+            'code'    => 200,
+            'message' => 'success',
+            'data'    => [
+                'items'         => $items,
+                'current_page'  => $paginator->currentPage(),
+                'per_page'      => $paginator->perPage(),
+                'total'         => $paginator->total(),
+                'last_page'     => $paginator->lastPage(),
+                'has_more_pages'=> $paginator->hasMorePages(),
+            ],
+        ], 200);
+    }
+
+    /**
+     * 志愿打卡记录（当前用户）
+     * GET /api/user/volunteer-attendances?page=1
+     */
+    public function volunteerAttendances(Request $request)
+    {
+        $userId = $request->user()->id;
+
+        $paginator = VolunteerAttendance::with('activity')
+            ->where('user_id', $userId)
+            ->orderByDesc('check_in_time')
+            ->paginate(15);
+
+        $items = collect($paginator->items())->map(function ($att) {
+            $serviceHours = null;
+            if ($att->check_in_time && $att->check_out_time) {
+                $minutes = $att->check_in_time->diffInMinutes($att->check_out_time);
+                $serviceHours = round($minutes / 60, 2);
+            }
+
+            return [
+                'id'              => $att->id,
+                'status'          => $att->status,           // checked_in / completed
+                'check_in_time'   => $att->check_in_time ? (string) $att->check_in_time : null,
+                'check_out_time'  => $att->check_out_time ? (string) $att->check_out_time : null,
+                'remark'          => $att->remark,
+                'service_hours'   => $serviceHours,          // 已签退时返回小时数（保留两位）
+                'activity'        => $att->activity ? [
+                    'id'    => $att->activity->id,
+                    'title' => $att->activity->title,
+                ] : null,
+            ];
+        });
+
+        return response()->json([
+            'code'    => 200,
+            'message' => 'success',
+            'data'    => [
+                'items'         => $items,
+                'current_page'  => $paginator->currentPage(),
+                'per_page'      => $paginator->perPage(),
+                'total'         => $paginator->total(),
+                'last_page'     => $paginator->lastPage(),
+                'has_more_pages'=> $paginator->hasMorePages(),
             ],
         ], 200);
     }

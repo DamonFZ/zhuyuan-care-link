@@ -1,10 +1,8 @@
 /**
- * pages/points/index.js —— 消费金流水
- * GET /api/user/point-transactions 分页拉取，onReachBottom 上拉加载更多
+ * pages/volunteer/index.js —— 志愿服务打卡明细
+ * GET /api/user/volunteer-attendances 分页拉取，onReachBottom 上拉加载更多
  */
 const { request } = require('../../utils/request.js');
-
-const PAGE_SIZE = 15;
 
 Page({
   data: {
@@ -20,7 +18,7 @@ Page({
   },
 
   /**
-   * 拉取流水
+   * 拉取打卡记录
    * @param {boolean} reset 是否重置到第 1 页
    */
   fetchList(reset = false) {
@@ -34,14 +32,13 @@ Page({
       this.setData({ loadingMore: true });
     }
 
-    request.get('/api/user/point-transactions', { page }, { auth: true })
+    request.get('/api/user/volunteer-attendances', { page }, { auth: true })
       .then((res) => {
         const data = res.data || {};
-        const items = (data.items || []).map((tx) => ({
-          ...tx,
-          // 金额保留两位小数展示
-          amount_display: Number(tx.amount).toFixed(2),
-          new_points: Number(tx.new_points).toFixed(2),
+        const items = (data.items || []).map((att) => ({
+          ...att,
+          // 服务时长保留两位小数
+          service_hours: att.service_hours !== null ? Number(att.service_hours).toFixed(2) : null,
         }));
 
         const newList = reset ? items : this.data.list.concat(items);
@@ -54,7 +51,7 @@ Page({
         });
       })
       .catch((err) => {
-        console.error('[points] fetch fail:', err && err.message);
+        console.error('[volunteer] fetch fail:', err && err.message);
         this.setData({ loading: false, loadingMore: false });
       });
   },

@@ -37,6 +37,12 @@ Route::middleware("auth:sanctum")->group(function () {
     // 个人资料查询（结构化返回，含等级/头像）
     Route::get("/user/profile",  [UserController::class, 'getProfile']);
 
+    // 消费金流水（分页，按时间倒序）
+    Route::get("/user/point-transactions", [UserController::class, 'pointTransactions']);
+
+    // 志愿打卡记录（分页，按签到时间倒序，预加载活动）
+    Route::get("/user/volunteer-attendances", [UserController::class, 'volunteerAttendances']);
+
     // ===== 动态核销码 & 商户扫码扣款闭环 =====
     // 居民：生成 60s 动态核销 Token
     Route::get('/qrcode/generate', [QrCodeController::class, 'generate']);

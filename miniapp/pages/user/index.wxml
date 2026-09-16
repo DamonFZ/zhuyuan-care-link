@@ -58,6 +58,12 @@
         <view class="menu-arrow">›</view>
       </view>
 
+      <view class="menu-item" bindtap="onVolunteerTap" hover-class="menu-item-hover">
+        <view class="menu-icon">🙋</view>
+        <view class="menu-label">志愿服务记录</view>
+        <view class="menu-arrow">›</view>
+      </view>
+
       <view class="menu-item" bindtap="onLogout" hover-class="menu-item-hover">
         <view class="menu-icon">🚪</view>
         <view class="menu-label">退出登录</view>

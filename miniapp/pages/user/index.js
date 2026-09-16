@@ -68,10 +68,18 @@ Page({
     wx.navigateTo({ url: '/pages/user/edit' });
   },
 
-  /** 💳 消费金流水 → 暂跳 points 占位页 */
+  /** 💳 消费金流水 */
   onPointsTap() {
     wx.navigateTo({
       url: '/pages/points/index',
+      fail: () => wx.showToast({ title: '开发中', icon: 'none' }),
+    });
+  },
+
+  /** 🙋 志愿服务记录 */
+  onVolunteerTap() {
+    wx.navigateTo({
+      url: '/pages/volunteer/index',
       fail: () => wx.showToast({ title: '开发中', icon: 'none' }),
     });
   },
