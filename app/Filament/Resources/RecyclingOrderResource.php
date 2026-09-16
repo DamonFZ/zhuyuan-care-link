@@ -26,6 +26,11 @@ class RecyclingOrderResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    /**
+     * 回收模块暂未上线，从左侧导航隐藏
+     */
+    protected static bool $shouldRegisterNavigation = false;
+
     public static function form(Form $form): Form
     {
         return $form

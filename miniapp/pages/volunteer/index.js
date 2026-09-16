@@ -32,7 +32,7 @@ Page({
       this.setData({ loadingMore: true });
     }
 
-    request.get('/api/user/volunteer-attendances', { page }, { auth: true })
+    return request.get('/api/user/volunteer-attendances', { page }, { auth: true })
       .then((res) => {
         const data = res.data || {};
         const items = (data.items || []).map((att) => ({
@@ -62,5 +62,13 @@ Page({
       this.setData({ page: this.data.page + 1 });
       this.fetchList(false);
     }
+  },
+
+  /** 下拉刷新：重置到第 1 页并清空旧数据 */
+  onPullDownRefresh() {
+    this.setData({ list: [], page: 1, hasMore: true });
+    this.fetchList(true).finally(() => {
+      wx.stopPullDownRefresh();
+    });
   },
 });

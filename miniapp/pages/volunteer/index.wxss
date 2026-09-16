@@ -23,14 +23,13 @@ page {
   color: var(--text-muted);
   font-size: 28rpx;
 }
-.empty-emoji {
-  font-size: 120rpx;
+.empty-icon {
   margin-bottom: 24rpx;
 }
 .empty-text {
-  font-size: 32rpx;
-  color: var(--text-main);
-  font-weight: 700;
+  font-size: 30rpx;
+  color: var(--text-muted);
+  font-weight: 600;
   margin-bottom: 12rpx;
 }
 .empty-sub {

@@ -6,7 +6,7 @@
 
   <!-- 空状态 -->
   <view wx:elif="{{!loading && list.length === 0}}" class="empty-wrap">
-    <view class="empty-emoji">📭</view>
+    <icon type="info" size="80" color="#d1d5db" class="empty-icon" />
     <view class="empty-text">暂无流水记录</view>
     <view class="empty-sub">完成志愿服务或旧衣回收后，消费金变动将在此展示</view>
   </view>

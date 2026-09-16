@@ -1,4 +1,5 @@
 {
   "navigationBarTitleText": "消费金流水",
-  "enablePullDownRefresh": false
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark"
 }

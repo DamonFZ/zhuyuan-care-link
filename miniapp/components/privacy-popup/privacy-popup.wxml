@@ -1,0 +1,18 @@
+<view wx:if="{{visible}}" class="privacy-mask" catchtouchmove="noop">
+  <view class="privacy-dialog">
+    <view class="privacy-title">用户隐私保护提示</view>
+    <view class="privacy-content">
+      感谢您使用邻舍益家人。在使用本小程序前，请仔细阅读
+      <text class="privacy-link" bindtap="onOpenPrivacy">《小程序隐私保护指引》</text>
+      。如您同意，我们将收集您的头像、昵称、相册图片等必要信息用于提供服务。
+    </view>
+    <view class="privacy-btns">
+      <button class="privacy-btn privacy-btn-cancel" bindtap="onDisagree">拒绝</button>
+      <button
+        class="privacy-btn privacy-btn-confirm"
+        open-type="agreePrivacyAuthorization"
+        bindagreeprivacyauthorization="onAgree"
+      >同意</button>
+    </view>
+  </view>
+</view>

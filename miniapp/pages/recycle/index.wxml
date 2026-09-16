@@ -83,4 +83,7 @@
     >{{submitting ? '提交中…' : '提交'}}</button>
   </view>
 
+  <!-- 全局隐私授权弹窗 -->
+  <privacy-popup id="privacy-popup"></privacy-popup>
+
 </view>

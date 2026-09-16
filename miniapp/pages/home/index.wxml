@@ -84,17 +84,22 @@
           <view class="grid-desc">扫码签到 / 签退</view>
         </view>
 
-        <!-- 上门回收 -->
+        <!-- 上门回收（暂未上线，隐藏入口） -->
+        <!--
         <view class="grid-card" bindtap="onRecycleTap" hover-class="grid-card-hover">
           <view class="grid-icon grid-icon-secondary">♻️</view>
           <view class="grid-title">上门回收</view>
           <view class="grid-desc">预约旧衣回收</view>
         </view>
+        -->
 
       </view>
     </view>
 
     <view class="home-tips">* 消费金来源于「志愿服务」「旧衣回收」等公益活动，可在社区合作商户核销。</view>
   </block>
+
+  <!-- 全局隐私授权弹窗 -->
+  <privacy-popup id="privacy-popup"></privacy-popup>
 
 </view>

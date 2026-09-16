@@ -6,7 +6,7 @@
 
   <!-- 空状态 -->
   <view wx:elif="{{!loading && list.length === 0}}" class="empty-wrap">
-    <view class="empty-emoji">🙋</view>
+    <icon type="info" size="80" color="#d1d5db" class="empty-icon" />
     <view class="empty-text">暂无志愿记录</view>
     <view class="empty-sub">扫码参与社区志愿活动后，打卡记录将在此展示</view>
   </view>
