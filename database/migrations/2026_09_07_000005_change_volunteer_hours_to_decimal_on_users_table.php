@@ -13,20 +13,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->decimal('volunteer_hours', 10, 2)
-                ->default(0)
-                ->comment('累计志愿时长(小时，仅累加base_hours)')
-                ->change();
+            // $table->decimal('volunteer_hours', 10, 2)
+            //     ->default(0)
+            //     ->comment('累计志愿时长(小时，仅累加base_hours)')
+            //     ->change();
         });
     }
 
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->integer('volunteer_hours')
-                ->default(0)
-                ->comment('累计志愿时长')
-                ->change();
+            // $table->integer('volunteer_hours')
+            //     ->default(0)
+            //     ->comment('累计志愿时长')
+            //     ->change();
         });
     }
 };
