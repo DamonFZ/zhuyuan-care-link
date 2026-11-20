@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\MerchantController;
 use App\Http\Controllers\Api\QrCodeController;
+use App\Http\Controllers\Api\RecycleBinInspectionController;
 use App\Http\Controllers\Api\RecycleController;
 use App\Http\Controllers\Api\RecycleRecordController;
 use App\Http\Controllers\Api\UploadController;
@@ -73,4 +74,9 @@ Route::middleware("auth:sanctum")->group(function () {
     Route::post('/recycle-records',     [RecycleRecordController::class, 'store']);
     Route::get('/recycle-records',      [RecycleRecordController::class, 'index']);
     Route::get('/recycle-records/{id}', [RecycleRecordController::class, 'show']);
+
+    // ===== 回收箱巡检（recycle_bin_inspections）—— 独立模块，与上述互不干扰 =====
+    // 提交巡检记录 / 巡检列表（分页+筛选）
+    Route::post('/recycle-bin-inspections', [RecycleBinInspectionController::class, 'store']);
+    Route::get('/recycle-bin-inspections',  [RecycleBinInspectionController::class, 'index']);
 });

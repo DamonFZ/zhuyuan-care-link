@@ -14,6 +14,13 @@ class UploadController extends Controller
     private const ALLOWED_DIRS = [
         'avatars',          // 居民小程序头像（默认，任意登录用户可用）
         'recycle-records',  // 内部回收记录图片（限回收员/操作员）
+        'recycle-bins',     // 回收箱巡检图片（限回收员/操作员）
+    ];
+
+    /** 仅限内部员工（回收员/操作员）使用的目录 */
+    private const STAFF_ONLY_DIRS = [
+        'recycle-records',
+        'recycle-bins',
     ];
 
     /**
@@ -40,7 +47,7 @@ class UploadController extends Controller
             ], 400);
         }
 
-        if ($dir === 'recycle-records') {
+        if (in_array($dir, self::STAFF_ONLY_DIRS, true)) {
             $user = $request->user();
             if (!$user || !in_array($user->role, [User::ROLE_RECYCLER, User::ROLE_OPERATOR], true)) {
                 return response()->json([
