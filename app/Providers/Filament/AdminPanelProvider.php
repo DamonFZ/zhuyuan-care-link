@@ -36,8 +36,9 @@ class AdminPanelProvider extends PanelProvider
                 Pages\Dashboard::class,
             ])
             ->navigationGroups([
-                '业务台账',
-                '基础档案',
+                '回收业务',
+                '活动管理',
+                '志愿者管理',
                 '系统管理',
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')

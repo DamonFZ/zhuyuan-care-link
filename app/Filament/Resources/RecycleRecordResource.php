@@ -38,7 +38,7 @@ class RecycleRecordResource extends Resource
 
     protected static ?string $pluralModelLabel = "内部回收记录";
 
-    protected static ?string $navigationGroup = '业务台账';
+    protected static ?string $navigationGroup = '回收业务';
 
     protected static ?int $navigationSort = 2;
 

@@ -26,7 +26,7 @@ class VolunteerRecordResource extends Resource
 
     protected static ?string $pluralModelLabel = "志愿服务";
 
-    protected static ?string $navigationGroup = '业务台账';
+    protected static ?string $navigationGroup = '活动管理';
 
     protected static ?int $navigationSort = 2;
 

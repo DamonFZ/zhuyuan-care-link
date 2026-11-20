@@ -25,7 +25,7 @@ class UserResource extends Resource
 
     protected static ?string $pluralModelLabel = '居民';
 
-    protected static ?string $navigationGroup = '基础档案';
+    protected static ?string $navigationGroup = '志愿者管理';
 
     protected static ?int $navigationSort = 1;
 

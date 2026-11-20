@@ -22,7 +22,7 @@ class RecyclingOrderResource extends Resource
 
     protected static ?string $pluralModelLabel = "旧衣回收";
 
-    protected static ?string $navigationGroup = '业务台账';
+    protected static ?string $navigationGroup = '活动管理';
 
     protected static ?int $navigationSort = 1;
 
