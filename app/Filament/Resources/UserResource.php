@@ -84,6 +84,7 @@ class UserResource extends Resource
                                 'resident' => '社区居民',
                                 'merchant' => '核销商户',
                                 'operator' => '操作员',
+                                'recycler' => '回收员',
                             ])
                             ->required()
                             ->default('resident'),
@@ -135,12 +136,14 @@ class UserResource extends Resource
                         'resident' => '社区居民',
                         'merchant' => '核销商户',
                         'operator' => '操作员',
+                        'recycler' => '回收员',
                         default => $state,
                     })
                     ->color(fn (string $state): string => match ($state) {
                         'resident' => 'success',
                         'merchant' => 'warning',
                         'operator' => 'danger',
+                        'recycler' => 'info',
                         default => 'gray',
                     }),
                 Tables\Columns\TextColumn::make('created_at')

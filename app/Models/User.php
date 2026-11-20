@@ -17,6 +17,14 @@ class User extends Authenticatable implements FilamentUser
 {
     use HasApiTokens, HasFactory, Notifiable, LogsActivity;
 
+    /**
+     * 角色常量（users.role 为 string 自由枚举，控制器按字符串比对鉴权）
+     */
+    public const ROLE_RESIDENT = "resident";   // 社区居民
+    public const ROLE_MERCHANT = "merchant";   // 核销商户
+    public const ROLE_OPERATOR = "operator";   // 后台操作员
+    public const ROLE_RECYCLER = "recycler";   // 回收员（回收业务 App）
+
     protected $fillable = [
         "name",
         "email",
@@ -62,6 +70,14 @@ class User extends Authenticatable implements FilamentUser
     public function recyclingOrders(): HasMany
     {
         return $this->hasMany(RecyclingOrder::class);
+    }
+
+    /**
+     * 回收员提交的回收记录（回收业务 App）
+     */
+    public function recycleRecords(): HasMany
+    {
+        return $this->hasMany(RecycleRecord::class);
     }
 
     public function volunteerRecords(): HasMany
