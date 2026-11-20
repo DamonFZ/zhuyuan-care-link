@@ -231,9 +231,9 @@ form-data 字段：
 | KEY | 类型 | VALUE | 说明 |
 |---|---|---|---|
 | `file` | **File** | 选择本地 jpg/png/webp（≤5MB） | ⚠️ 必须选 File 类型 |
-| `dir` | Text | `recycle-records` | 不传默认 `avatars` |
+| `dir` | Text | `recycle-records` 或 `recycle-bins` | 不传默认 `avatars`。白名单目录及权限：`avatars`（任意登录用户）、`recycle-records` / `recycle-bins`（仅限回收员 recycler / 操作员 operator，居民传这两个目录返回 403） |
 
-> 字段名也支持 `image` / `avatar` / `media`，推荐统一用 `file`。
+> 字段名也支持 `image` / `avatar` / `media`，推荐统一用 `file`。提交回收箱巡检记录前，请用 `dir=recycle-bins` 上传，把返回的 `path` 回传到巡检接口的 `images` 数组。
 
 **Tests**
 
@@ -275,7 +275,7 @@ pm.environment.set("clothesPath", json.data.path); // 存给提交记录用
 | 非图片文件 | 上传 `.txt` | 400 | `400` / `不支持的文件类型` |
 | 超 5MB | 上传 >5MB 图片 | 400 | `400` / `图片不得超过 5MB` |
 | 不传文件 | Body 只留 `dir` | 400 | `400` / `未收到有效文件` |
-| 居民传回收目录 | 用居民 token + `dir=recycle-records` | 403 | `403` / `无权上传回收业务图片` |
+| 居民传回收目录 | 用居民 token + `dir=recycle-records`（或 `dir=recycle-bins`） | 403 | `403` / `无权上传回收业务图片` |
 
 > 建议再执行一次上传（选另一张图），把返回 `path` 存到环境变量 `scalePath`，供提交记录使用。
 
