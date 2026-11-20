@@ -56,10 +56,14 @@ class UserResource extends Resource
                             ->numeric()
                             ->prefix('¥')
                             ->inputMode('decimal')
+                            ->default(0)
+                            ->dehydrateStateUsing(fn ($state) => blank($state) ? 0 : $state)
                             ->rules(['numeric', 'min:0']),
                         Forms\Components\TextInput::make('volunteer_hours')
                             ->label('志愿时长(小时)')
                             ->numeric()
+                            ->default(0)
+                            ->dehydrateStateUsing(fn ($state) => blank($state) ? 0 : $state)
                             ->rules(['integer', 'min:0']),
                         Forms\Components\Select::make('volunteer_level_id')
                             ->label('志愿者等级')

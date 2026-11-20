@@ -50,6 +50,23 @@ class User extends Authenticatable implements FilamentUser
         "volunteer_hours" => "decimal:2",
     ];
 
+    /**
+     * 模型创建兜底：points / volunteer_hours 为 NOT NULL 列，
+     * 任何入口（Filament 表单、微信登录、API 等）若传入 null，统一转为 0，
+     * 避免 "Column 'xxx' cannot be null" 报错。
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (self $user) {
+            if (null === $user->points) {
+                $user->points = 0;
+            }
+            if (null === $user->volunteer_hours) {
+                $user->volunteer_hours = 0;
+            }
+        });
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
