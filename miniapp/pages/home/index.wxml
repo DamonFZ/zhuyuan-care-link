@@ -52,7 +52,7 @@
         <swiper-item wx:if="{{slides.length === 0}}">
           <view class="banner-placeholder">
             <view class="ph-title">邻舍益家人</view>
-            <view class="ph-sub">We care, we share</view>
+            <view class="ph-sub">- We care, we share -</view>
           </view>
         </swiper-item>
       </swiper>
@@ -119,7 +119,7 @@
       </view>
     </view>
 
-    <view class="home-slogan">We care, we share</view>
+    <view class="home-slogan">- We care, we share -</view>
   </block>
 
   <!-- 全局隐私授权弹窗 -->
