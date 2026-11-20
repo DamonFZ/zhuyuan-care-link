@@ -16,17 +16,27 @@ use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * 【机构内部回收员工】回收记录管理
+ *
+ * ⚠️ 业务隔离声明：
+ *   本 Resource 仅管理「机构内部回收员工」上门回收时登记的记录（recycle_records 表）。
+ *   它与面向社区居民的「旧衣回收预约」模块（RecyclingOrderResource / recycling_orders 表）
+ *   是两套完全独立的业务，数据表、模型、统计口径互不共享、互不污染。
+ *   - 居民回收预约：RecyclingOrder 模型 → recycling_orders 表（居民端小程序 /api/recycle/reserve）
+ *   - 内部回收登记：RecycleRecord 模型 → recycle_records 表（本 Resource）
+ */
 class RecycleRecordResource extends Resource
 {
     protected static ?string $model = RecycleRecord::class;
 
     protected static ?string $navigationIcon = "heroicon-o-archive-box";
 
-    protected static ?string $navigationLabel = "回收记录";
+    protected static ?string $navigationLabel = "内部回收记录";
 
-    protected static ?string $modelLabel = "回收记录";
+    protected static ?string $modelLabel = "内部回收记录";
 
-    protected static ?string $pluralModelLabel = "回收记录";
+    protected static ?string $pluralModelLabel = "内部回收记录";
 
     protected static ?string $navigationGroup = '业务台账';
 

@@ -8,6 +8,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
+/**
+ * 【机构内部回收员工】上门回收登记记录
+ *
+ * ⚠️ 业务隔离声明：
+ *   本表（recycle_records）仅承载「机构内部回收员工」上门回收时的登记数据：
+ *   回收人员(user_id)、衣物图片(clothes_image)、秤图片(scale_image)、实际重量(weight)。
+ *   它与面向社区居民的「旧衣回收预约」是两套完全独立的业务，禁止混用：
+ *   - 居民回收预约 → RecyclingOrder 模型 → recycling_orders 表（含预约时间、状态、奖励结算等字段）
+ *   - 内部回收登记 → 本模型       → recycle_records 表（仅实际回收登记，无预约/奖励逻辑）
+ *
+ * 重量统计口径：本模型 weight 之和仅代表内部回收业务量，与居民模块完全分离。
+ */
 class RecycleRecord extends Model
 {
     use HasFactory, LogsActivity;
