@@ -58,6 +58,9 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
+            // 强制数据库会话时区为东八区，不依赖服务器 system_time_zone，
+            // 与 app.timezone=Asia/Shanghai 保持全链路一致，避免时间差 8 小时
+            'timezone' => '+08:00',
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
