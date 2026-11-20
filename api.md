@@ -89,6 +89,8 @@ Accept: application/json
 | 5 | `POST` | `/api/recycle-records` | 是 | 提交一条回收记录 |
 | 6 | `GET` | `/api/recycle-records` | 是 | 历史记录分页列表 + 汇总重量统计 |
 | 7 | `GET` | `/api/recycle-records/{id}` | 是 | 单条回收记录详情 |
+| 8 | `POST` | `/api/recycle-bin-inspections` | 是 | 提交一条回收箱巡检记录 |
+| 9 | `GET` | `/api/recycle-bin-inspections` | 是 | 巡检记录分页列表 + 箱号/状态筛选 |
 
 ---
 
@@ -468,6 +470,114 @@ pm.test("200 且含完整信息", () => {
 | 未知路由 | `/this-route-not-exist` | 404 | `404` / `请求的资源不存在`（Handler 兜底） |
 
 > 「记录不存在」用例请额外断言响应是 JSON 而非 HTML（见下方快捷建议），用于监控 nginx 是否又把 404 拦截成 HTML 页面。
+
+---
+
+### 用例 8：提交回收箱巡检记录（正向 + 负向）
+
+**前置**：先用例 4 上传 1~9 张巡检照片，`dir` 选 `recycle-bins`，把返回的 `path` 存为环境变量 `{{binImgPath1}}`（可多张）。`recycle-bins` 目录仅限回收员/操作员，居民上传会返回 403。
+
+| 项 | 值 |
+|---|---|
+| Method | `POST` |
+| URL | `{{baseUrl}}/recycle-bin-inspections` |
+| Headers | `Accept: application/json`、`Content-Type: application/json`、`Authorization: Bearer {{token}}` |
+| Body | raw → JSON |
+
+```json
+{
+  "bin_code": "ZS0001",
+  "status": "good",
+  "images": ["{{binImgPath1}}", "{{binImgPath2}}"],
+  "latitude": 31.2304161,
+  "longitude": 121.473701
+}
+```
+
+> 字段说明：`bin_code` 可选（会自动 trim）；`status` 可选，取值 `good`/`rusty`/`damaged`，未传默认 `good`；`images` 必填，1~9 张字符串路径数组；`latitude`/`longitude` 可选，定位失败时传 `null` 或不传。
+
+**预期响应（201）**：
+```json
+{
+  "code": 201,
+  "message": "巡检记录提交成功",
+  "data": {
+    "id": 1,
+    "bin_code": "ZS0001",
+    "status": "good",
+    "status_text": "良好",
+    "images": ["recycle-bins/xxx.png"],
+    "images_urls": ["http://carelink.damon.com/storage/recycle-bins/xxx.png"],
+    "latitude": 31.2304161,
+    "longitude": 121.473701,
+    "created_at": "2026-11-20 15:30:00",
+    "user": { "id": 10, "name": "张回收", "role": "recycler" }
+  }
+}
+```
+
+**Tests**：
+```javascript
+const json = pm.response.json();
+pm.test("201", () => pm.expect(json.code).to.eql(201));
+pm.test("含完整图片URL数组", () => pm.expect(json.data.images_urls).to.be.an("array").with.length.above(0));
+pm.test("状态文案正确", () => pm.expect(json.data.status_text).to.be.a("string"));
+```
+
+**负向子用例**
+
+| 子用例 | Body | 预期 HTTP | 预期 `code` / `message` |
+|---|---|---|---|
+| 缺 images | `{"bin_code":"X"}` | 422 | `422` / `请至少上传一张巡检照片` |
+| 空 images 数组 | `{"images":[]}` | 422 | `422` / `请至少上传一张巡检照片` |
+| 超过 9 张 | `images` 填 10 个 | 422 | `422` |
+| 非法 status | `{"images":["x"],"status":"broken"}` | 422 | `422` / `状态值不合法` |
+| 纬度越界 | `{"images":["x"],"latitude":999}` | 422 | `422` / `纬度取值范围为 -90 ~ 90` |
+| 居民提交 | Header 用居民 token | 403 | `403` / `无权提交回收箱巡检记录` |
+
+---
+
+### 用例 9：巡检记录列表 + 筛选（正向 + 权限）
+
+| 项 | 值 |
+|---|---|
+| Method | `GET` |
+| URL | `{{baseUrl}}/recycle-bin-inspections` |
+| Headers | `Accept: application/json`、`Authorization: Bearer {{token}}` |
+| Params | `per_page=15`（可选，1–50）、`bin_code=ZS0001`（可选，模糊匹配）、`status=damaged`（可选，精确匹配） |
+
+**预期响应（200）**：
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "items": [
+      {
+        "id": 2, "bin_code": "ZS0002", "status": "damaged", "status_text": "损坏",
+        "images_urls": ["http://..."], "latitude": null, "longitude": null,
+        "created_at": "2026-11-20 15:31:00",
+        "user": { "id": 10, "name": "张回收", "role": "recycler" }
+      }
+    ],
+    "current_page": 1, "per_page": 15, "total": 2, "last_page": 1, "has_more_pages": false
+  }
+}
+```
+
+> 列表按 `created_at` 倒序。**权限**：回收员（`recycler`）只看自己提交的记录；操作员（`operator`）可看全部；其他角色返回 403。
+
+**Tests**：
+```javascript
+const json = pm.response.json();
+pm.test("200 且含分页", () => {
+  pm.expect(json.code).to.eql(200);
+  pm.expect(json.data).to.have.property("total");
+  pm.expect(json.data.items).to.be.an("array");
+});
+```
+
+**权限子用例**：把 Header token 换成 `{{operatorToken}}` 再请求 → `data.total` 应 ≥ 回收员可见数量（操作员看全部）；用居民 token 请求 → `403`。
 
 ---
 
