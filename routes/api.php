@@ -6,9 +6,9 @@ use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\MerchantController;
 use App\Http\Controllers\Api\QrCodeController;
 use App\Http\Controllers\Api\RecycleController;
+use App\Http\Controllers\Api\RecycleRecordController;
 use App\Http\Controllers\Api\UploadController;
 use App\Http\Controllers\Api\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,7 +18,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 // ===== 公开路由（无需鉴权）=====
+// 居民微信登录（小程序）
 Route::post("/wechat/login", [AuthController::class, "wechatLogin"]);
+// 员工账号密码登录（回收业务 App / 后台操作员，复用 users 表 email+password）
+Route::post("/login",        [AuthController::class, "login"]);
 Route::get("/slides",       [HomeController::class, "getSlides"]);
 // 志愿活动列表（首页展示，无需登录）
 Route::get("/activities",   [ActivityController::class, "index"]);
@@ -27,9 +30,10 @@ Route::get("/activities",   [ActivityController::class, "index"]);
 // ===== Sanctum 受保护路由 =====
 Route::middleware("auth:sanctum")->group(function () {
 
-    Route::get("/user", function (Request $request) {
-        return $request->user();
-    });
+    // 当前登录用户信息（App"我"页 / 后台共用，返回结构化 user）
+    Route::get("/user",  [AuthController::class, "me"]);
+    // 退出登录：撤销当前 Token
+    Route::post("/logout", [AuthController::class, "logout"]);
 
     // 志愿活动详情（附带当前用户 has_registered）与报名
     Route::get("/activities/{id}",          [ActivityController::class, "show"]);
@@ -61,6 +65,12 @@ Route::middleware("auth:sanctum")->group(function () {
     // ===== 志愿活动扫码签到/签退 + 自动结算 =====
     Route::post('/activity/scan', [ActivityController::class, 'scan']);
 
-    // ===== 上门回收预约 =====
+    // ===== 上门回收预约（居民端，recycling_orders） =====
     Route::post('/recycle/reserve', [RecycleController::class, 'reserve']);
+
+    // ===== 内部回收员工业务（recycle_records）—— 与上方居民回收完全隔离 =====
+    // 提交回收记录 / 历史列表+汇总统计 / 单条详情
+    Route::post('/recycle-records',     [RecycleRecordController::class, 'store']);
+    Route::get('/recycle-records',      [RecycleRecordController::class, 'index']);
+    Route::get('/recycle-records/{id}', [RecycleRecordController::class, 'show']);
 });

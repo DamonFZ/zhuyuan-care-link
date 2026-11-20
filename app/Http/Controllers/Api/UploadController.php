@@ -3,20 +3,54 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 class UploadController extends Controller
 {
+    /** 允许的存储子目录（白名单，防路径穿越） */
+    private const ALLOWED_DIRS = [
+        'avatars',          // 居民小程序头像（默认，任意登录用户可用）
+        'recycle-records',  // 内部回收记录图片（限回收员/操作员）
+    ];
+
     /**
-     * Sanctum 保护：小程序头像（或其他图片）上传
-     * 前端通过 wx.uploadFile 上传字段名 file（formData: 无要求；file 字段本身传二进制）
-     * 保存到 storage/app/public/avatars → 通过 public/storage/avatars/xxx 访问
+     * Sanctum 保护：通用图片上传
+     *
+     * - 字段名：file / image / avatar / media
+     * - 可选 query/form 字段 dir：存储子目录，默认 avatars；
+     *   传 recycle-records 时仅回收员/操作员可用，存到 public 磁盘下对应目录。
+     * - 仅允许 jpg/jpeg/png/webp/gif，最大 5MB。
+     *
      * POST /api/upload
+     *
+     * 注意：居民端默认不传 dir，行为与之前完全一致（向后兼容）。
      */
     public function uploadImage(Request $request)
     {
+        // 0) 目录白名单校验 + 内部目录角色限制
+        $dir = $request->input('dir', 'avatars');
+        if (!in_array($dir, self::ALLOWED_DIRS, true)) {
+            return response()->json([
+                'code'    => 400,
+                'message' => '不支持的存储目录',
+                'data'    => null,
+            ], 400);
+        }
+
+        if ($dir === 'recycle-records') {
+            $user = $request->user();
+            if (!$user || !in_array($user->role, [User::ROLE_RECYCLER, User::ROLE_OPERATOR], true)) {
+                return response()->json([
+                    'code'    => 403,
+                    'message' => '无权上传回收业务图片',
+                    'data'    => null,
+                ], 403);
+            }
+        }
+
         // 1) 接收文件：字段名优先 file，其次 image / avatar / media
         /** @var UploadedFile|null $file */
         $file = $request->file('file')
@@ -51,7 +85,6 @@ class UploadController extends Controller
         }
 
         // 3) 存储（public disk = storage/app/public，经 storage:link 映射到 public/storage）
-        $dir = 'avatars';
         $relativePath = $file->store($dir, ['disk' => 'public']);
         if (!$relativePath) {
             return response()->json([
@@ -61,7 +94,7 @@ class UploadController extends Controller
             ], 500);
         }
 
-        // 4) 返回可访问 URL
+        // 4) 返回可访问 URL + 相对路径
         $url = url('storage/' . $relativePath);
 
         return response()->json([
@@ -69,7 +102,9 @@ class UploadController extends Controller
             'message' => 'success',
             'data'    => [
                 'url'          => $url,
-                'relativePath' => $relativePath,
+                'path'         => $relativePath,   // 相对路径，提交记录时回传此字段
+                'relativePath' => $relativePath,   // 兼容旧字段
+                'dir'          => $dir,
                 'size'         => $file->getSize(),
                 'mime'         => $file->getMimeType(),
                 'userId'       => $request->user()?->id,
