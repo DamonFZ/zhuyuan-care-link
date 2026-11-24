@@ -51,6 +51,12 @@ class RecycleRecordResource extends Resource
             ->schema([
                 Forms\Components\Section::make("回收信息")
                     ->schema([
+                        Forms\Components\DatePicker::make("created_at")
+                            ->label("回收日期")
+                            ->default(now())
+                            ->required()
+                            ->maxDate(now())
+                            ->helperText("可补录/修正回收日期，默认为今天；编辑时仅改日期、保留原录入时分秒。"),
                         Forms\Components\Select::make("user_id")
                             ->label("回收人员")
                             ->relationship("user", "name")

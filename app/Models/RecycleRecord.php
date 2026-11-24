@@ -40,6 +40,8 @@ class RecycleRecord extends Model
         "weight",
         "amount",
         "remark",
+        // 允许后台（Filament）补录/修正回收日期；API 端不传该字段，仍由 Eloquent 自动写入
+        "created_at",
     ];
 
     protected $casts = [
