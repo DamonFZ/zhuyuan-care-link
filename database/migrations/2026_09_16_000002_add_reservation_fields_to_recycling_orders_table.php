@@ -42,9 +42,12 @@ return new class extends Migration
 
         // status 默认值改为 pending（新增预约默认为待处理）
         // 注：不使用 ->change() 以避免依赖 doctrine/dbal
-        \Illuminate\Support\Facades\DB::statement(
-            "ALTER TABLE recycling_orders MODIFY COLUMN status varchar(255) NOT NULL DEFAULT 'pending' COMMENT 'pending/processing/completed/cancelled/revoked'"
-        );
+        // 仅 MySQL 执行原生 MODIFY；SQLite（测试环境）不支持该语法且注释不影响功能，故跳过
+        if (\Illuminate\Support\Facades\DB::getDriverName() === 'mysql') {
+            \Illuminate\Support\Facades\DB::statement(
+                "ALTER TABLE recycling_orders MODIFY COLUMN status varchar(255) NOT NULL DEFAULT 'pending' COMMENT 'pending/processing/completed/cancelled/revoked'"
+            );
+        }
     }
 
     public function down(): void
@@ -59,8 +62,10 @@ return new class extends Migration
             ]);
         });
 
-        \Illuminate\Support\Facades\DB::statement(
-            "ALTER TABLE recycling_orders MODIFY COLUMN status varchar(255) NOT NULL DEFAULT 'completed'"
-        );
+        if (\Illuminate\Support\Facades\DB::getDriverName() === 'mysql') {
+            \Illuminate\Support\Facades\DB::statement(
+                "ALTER TABLE recycling_orders MODIFY COLUMN status varchar(255) NOT NULL DEFAULT 'completed'"
+            );
+        }
     }
 };

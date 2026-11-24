@@ -74,6 +74,9 @@ Route::middleware("auth:sanctum")->group(function () {
     Route::post('/recycle-records',     [RecycleRecordController::class, 'store']);
     Route::get('/recycle-records',      [RecycleRecordController::class, 'index']);
     Route::get('/recycle-records/{id}', [RecycleRecordController::class, 'show']);
+    // 编辑更新（PUT / PATCH 均支持）/ 删除（仅本人 + 创建未满 24 小时可删）
+    Route::match(['put', 'patch'], '/recycle-records/{id}', [RecycleRecordController::class, 'update']);
+    Route::delete('/recycle-records/{id}',                  [RecycleRecordController::class, 'destroy']);
 
     // ===== 回收箱巡检（recycle_bin_inspections）—— 独立模块，与上述互不干扰 =====
     // 提交巡检记录 / 巡检列表（分页+筛选）

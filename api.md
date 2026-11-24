@@ -89,8 +89,10 @@ Accept: application/json
 | 5 | `POST` | `/api/recycle-records` | 是 | 提交一条回收记录 |
 | 6 | `GET` | `/api/recycle-records` | 是 | 历史记录分页列表 + 汇总重量统计 |
 | 7 | `GET` | `/api/recycle-records/{id}` | 是 | 单条回收记录详情 |
-| 8 | `POST` | `/api/recycle-bin-inspections` | 是 | 提交一条回收箱巡检记录 |
-| 9 | `GET` | `/api/recycle-bin-inspections` | 是 | 巡检记录分页列表 + 箱号/状态筛选 |
+| 8 | `PUT`/`PATCH` | `/api/recycle-records/{id}` | 是 | 编辑一条回收记录（仅本人） |
+| 9 | `DELETE` | `/api/recycle-records/{id}` | 是 | 删除一条回收记录（仅本人 + 创建未满 24 小时） |
+| 10 | `POST` | `/api/recycle-bin-inspections` | 是 | 提交一条回收箱巡检记录 |
+| 11 | `GET` | `/api/recycle-bin-inspections` | 是 | 巡检记录分页列表 + 箱号/状态筛选 |
 
 ---
 
@@ -483,7 +485,109 @@ pm.test("200 且含完整信息", () => {
 
 ---
 
-### 用例 8：提交回收箱巡检记录（正向 + 负向）
+### 用例 8：编辑回收记录（正向 + 负向）
+
+前置：用例 5 存下的 `{{recordId}}`，且该记录为当前 token 用户本人提交（编辑不受 24 小时限制）。
+
+**请求**
+
+| 项 | 值 |
+|---|---|
+| Method | `PUT`（`PATCH` 等价） |
+| URL | `{{baseUrl}}/recycle-records/{{recordId}}` |
+| Headers | `Accept: application/json`、`Authorization: Bearer {{token}}` |
+| Body | `image_urls`（必填，数组 1~30 项字符串）、`weight`（必填，数字 > 0）、`amount`（选填，数字 ≥ 0 或 null）、`remark`（选填，字符串 ≤ 500） |
+
+请求体示例：
+
+```json
+{
+  "image_urls": ["{{recordImg1}}", "{{recordImg2}}"],
+  "weight": 8.0,
+  "amount": null,
+  "remark": "更新后的备注"
+}
+```
+
+**Tests**
+
+```javascript
+const json = pm.response.json();
+pm.test("编辑成功 200", () => {
+  pm.expect(json.code).to.eql(200);
+  pm.expect(json.message).to.eql("回收记录更新成功");
+});
+pm.test("返回更新后的完整记录", () => {
+  pm.expect(json.data).to.include.keys(
+    "id", "weight", "amount", "remark", "image_urls", "full_image_urls", "created_at", "user"
+  );
+});
+```
+
+**预期响应（200）**：`data` 结构同用例 5，含更新后的字段与 `full_image_urls`。
+
+**负向子用例**
+
+| 子用例 | 操作 | 预期 HTTP | 预期 `code` / `message` |
+|---|---|---|---|
+| 非本人编辑 | 用他人 token 编辑别人的记录 | 403 | `403` / `无权操作他人的回收记录` |
+| 记录不存在 | `/recycle-records/999999` | 404 | `404` / `回收记录不存在` |
+| 缺图片 | 去掉 `image_urls` | 422 | `422` / `请至少上传一张现场照片` |
+| 空图片数组 | `"image_urls": []` | 422 | `422` |
+| 超过 30 张 | `image_urls` 填 31 项 | 422 | `422` / `现场照片最多 30 张` |
+| 重量为 0 | `"weight": 0` | 422 | `422` / `重量必须大于 0` |
+| 负金额 | `"amount": -1` | 422 | `422` / `金额不能为负数` |
+| 未登录 | 不带 `Authorization` | 401 | `401` / 统一 JSON |
+
+> 编辑不受「创建满 24 小时」限制（仅删除受限），可额外断言：把记录 `created_at` 回拨 25 小时后仍可 `PUT` 成功 200。
+
+---
+
+### 用例 9：删除回收记录（正向 + 负向）
+
+前置：用例 5 存下的 `{{recordId}}`，且该记录为当前 token 用户本人提交、创建时间未满 24 小时。
+
+**请求**
+
+| 项 | 值 |
+|---|---|
+| Method | `DELETE` |
+| URL | `{{baseUrl}}/recycle-records/{{recordId}}` |
+| Headers | `Accept: application/json`、`Authorization: Bearer {{token}}` |
+
+**Tests**
+
+```javascript
+const json = pm.response.json();
+pm.test("删除成功 200", () => {
+  pm.expect(json.code).to.eql(200);
+  pm.expect(json.message).to.eql("删除成功");
+  pm.expect(json.data).to.eql(null);
+});
+// 删除后再查应返回 404
+pm.sendRequest({
+  url: `${pm.environment.get("baseUrl")}/recycle-records/${pm.environment.get("recordId")}`,
+  method: "GET",
+  header: { Authorization: `Bearer ${pm.environment.get("token")}` }
+}, (_, res) => pm.test("删除后查询返回 404", () => pm.expect(res.code).to.eql(404)));
+```
+
+**预期响应（200）**：`{ "code": 200, "message": "删除成功", "data": null }`，记录被硬删除；`spatie/laravel-activitylog` 记录 `deleted` 事件。
+
+**负向子用例**
+
+| 子用例 | 操作 | 预期 HTTP | 预期 `code` / `message` |
+|---|---|---|---|
+| 非本人删除 | 用他人 token 删除别人的记录 | 403 | `403` / `无权操作他人的回收记录` |
+| 满 24 小时删除 | 记录 `created_at` 距今 ≥ 24 小时 | 403 | `403` / `超过24小时的记录不能删除`，且记录不被删除 |
+| 记录不存在 | `/recycle-records/999999` | 404 | `404` / `回收记录不存在` |
+| 未登录 | 不带 `Authorization` | 401 | `401` / 统一 JSON |
+
+> 24 小时判定：`$record->created_at->lte(now()->subHours(24))` 即禁止删除；恰好 24 小时整按「已满」处理（`lte`）。
+
+---
+
+### 用例 10：提交回收箱巡检记录（正向 + 负向）
 
 **前置**：先用例 4 上传 1~9 张巡检照片，`dir` 选 `recycle-bins`，把返回的 `path` 存为环境变量 `{{binImgPath1}}`（可多张）。`recycle-bins` 目录仅限回收员/操作员，居民上传会返回 403。
 
@@ -547,7 +651,7 @@ pm.test("状态文案正确", () => pm.expect(json.data.status_text).to.be.a("st
 
 ---
 
-### 用例 9：巡检记录列表 + 筛选（正向 + 权限）
+### 用例 11：巡检记录列表 + 筛选（正向 + 权限）
 
 | 项 | 值 |
 |---|---|

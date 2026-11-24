@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\StoreRecycleRecordRequest;
+use App\Http\Requests\Api\UpdateRecycleRecordRequest;
 use App\Models\RecycleRecord;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -146,6 +147,108 @@ class RecycleRecordController extends Controller
             "code"    => 200,
             "message" => "success",
             "data"    => $this->serializeRecord($record),
+        ], 200);
+    }
+
+    /**
+     * 编辑更新一条回收记录
+     * PUT / PATCH /api/recycle-records/{id}（需鉴权）
+     *
+     * 业务规则：
+     *   - 记录不存在 → 404
+     *   - 非本人提交（user_id != 当前用户 id）→ 403
+     *   - 仅允许本人修改；操作员亦不可代改他人记录（若后续有需求再放开）
+     *
+     * Spatie LogsActivity（logFillable + logOnlyDirty）会自动记录 updated 事件，
+     * 仅写入发生变更的字段，便于后台核查。
+     */
+    public function update(UpdateRecycleRecordRequest $request, int $id)
+    {
+        $user = $request->user();
+
+        if (!$this->isStaff($user)) {
+            return $this->forbidden("无权操作回收记录");
+        }
+
+        $record = RecycleRecord::with("user")->find($id);
+        if (!$record) {
+            return response()->json([
+                "code"    => 404,
+                "message" => "回收记录不存在",
+                "data"    => null,
+            ], 404);
+        }
+
+        // 本人隔离：仅记录提交者本人可编辑
+        if ($record->user_id !== $user->id) {
+            return $this->forbidden("无权操作他人的回收记录");
+        }
+
+        $validated = $request->validated();
+
+        $record->update([
+            "image_urls" => $validated["image_urls"],
+            "weight"     => $validated["weight"],
+            "amount"     => $validated["amount"] ?? null,
+            "remark"     => $validated["remark"] ?? null,
+        ]);
+
+        return response()->json([
+            "code"    => 200,
+            "message" => "回收记录更新成功",
+            "data"    => $this->serializeRecord($record),
+        ], 200);
+    }
+
+    /**
+     * 删除一条回收记录
+     * DELETE /api/recycle-records/{id}（需鉴权）
+     *
+     * 业务规则：
+     *   - 记录不存在 → 404
+     *   - 非本人提交 → 403
+     *   - 创建时间距今已满 24 小时 → 403（仅删除受限，编辑不受此限）
+     *
+     * 模型未启用 SoftDeletes，此处执行硬删除；
+     * Spatie LogsActivity 会自动记录 deleted 事件。
+     */
+    public function destroy(Request $request, int $id)
+    {
+        $user = $request->user();
+
+        if (!$this->isStaff($user)) {
+            return $this->forbidden("无权操作回收记录");
+        }
+
+        $record = RecycleRecord::with("user")->find($id);
+        if (!$record) {
+            return response()->json([
+                "code"    => 404,
+                "message" => "回收记录不存在",
+                "data"    => null,
+            ], 404);
+        }
+
+        // 本人隔离：仅记录提交者本人可删除
+        if ($record->user_id !== $user->id) {
+            return $this->forbidden("无权操作他人的回收记录");
+        }
+
+        // 24 小时删除限制：created_at 早于等于（当前时间 - 24h）即禁止删除
+        if ($record->created_at && $record->created_at->lte(now()->subHours(24))) {
+            return response()->json([
+                "code"    => 403,
+                "message" => "超过24小时的记录不能删除",
+                "data"    => null,
+            ], 403);
+        }
+
+        $record->delete();
+
+        return response()->json([
+            "code"    => 200,
+            "message" => "删除成功",
+            "data"    => null,
         ], 200);
     }
 
