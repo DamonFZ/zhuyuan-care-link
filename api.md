@@ -265,7 +265,7 @@ pm.environment.set("clothesPath", json.data.path); // 存给提交记录用
 }
 ```
 
-> 提交记录时回传 `path` 字段值（`clothes_image` / `scale_image`），框架会自动拼接成完整 URL。
+> 提交回收记录时，把上传返回的 `path` 放进 `image_urls` 数组回传（1~30 张）；后端返回的 `full_image_urls` 已自动拼接成完整可访问 URL。
 
 **负向子用例**
 
@@ -283,7 +283,7 @@ pm.environment.set("clothesPath", json.data.path); // 存给提交记录用
 
 ### 用例 5：提交回收记录（正向 + 负向）
 
-前置：已通过用例 4 拿到 `{{clothesPath}}` 与 `{{scalePath}}`。
+前置：已通过用例 4 上传 1~30 张现场照片（`dir` 选 `recycle-records`），把返回的 `path` 存为环境变量，如 `{{recordImg1}}`、`{{recordImg2}}`。
 
 **请求**
 
@@ -298,20 +298,24 @@ pm.environment.set("clothesPath", json.data.path); // 存给提交记录用
 
 ```json
 {
-  "clothes_image": "{{clothesPath}}",
-  "scale_image": "{{scalePath}}",
-  "weight": 3.5
+  "image_urls": ["{{recordImg1}}", "{{recordImg2}}"],
+  "weight": 3.5,
+  "amount": 12.5,
+  "remark": "上门回收称重"
 }
 ```
+
+> `amount`、`remark` 选填；`clothes_image` / `scale_image` 为历史兼容字段，不再强制要求。
 
 **Tests**
 
 ```javascript
 const json = pm.response.json();
 pm.test("创建成功 201", () => pm.expect(json.code).to.eql(201));
-pm.test("含完整图片 URL 与回收人员", () => {
-  pm.expect(json.data.clothes_image_url).to.be.a("string");
-  pm.expect(json.data.scale_image_url).to.be.a("string");
+pm.test("含多图 URL / 金额 / 备注 / 回收人员", () => {
+  pm.expect(json.data.full_image_urls).to.be.an("array").and.to.have.lengthOf.at.least(1);
+  pm.expect(json.data).to.have.property("amount");
+  pm.expect(json.data).to.have.property("remark");
   pm.expect(json.data.user).to.have.property("name");
 });
 pm.environment.set("recordId", json.data.id); // 存下新记录 id 给详情用例
@@ -326,12 +330,15 @@ pm.environment.set("recordId", json.data.id); // 存下新记录 id 给详情用
   "data": {
     "id": 4,
     "weight": 3.5,
+    "amount": 12.5,
+    "remark": "上门回收称重",
+    "image_urls": ["recycle-records/xxx.png", "recycle-records/yyy.png"],
+    "full_image_urls": [
+      "http://carelink.damon.com/storage/recycle-records/xxx.png",
+      "http://carelink.damon.com/storage/recycle-records/yyy.png"
+    ],
     "created_at": "2026-11-20 03:08:41",
     "date": "2026-11-20",
-    "clothes_image": "recycle-records/xxx.png",
-    "clothes_image_url": "http://carelink.damon.com/storage/recycle-records/xxx.png",
-    "scale_image": "recycle-records/yyy.png",
-    "scale_image_url": "http://carelink.damon.com/storage/recycle-records/yyy.png",
     "user": { "id": 10, "name": "张回收", "role": "recycler" }
   }
 }
@@ -341,10 +348,11 @@ pm.environment.set("recordId", json.data.id); // 存下新记录 id 给详情用
 
 | 子用例 | Body / Header | 预期 HTTP | 预期 `code` / `message` |
 |---|---|---|---|
-| 缺衣物图 | 去掉 `clothes_image` | 422 | `422` / `请上传衣物照片` |
-| 缺秤图 | 去掉 `scale_image` | 422 | `422` / `请上传秤重照片` |
+| 缺图片 | 去掉 `image_urls` | 422 | `422` / `请至少上传一张现场照片` |
+| 空图片数组 | `"image_urls": []` | 422 | `422` / `请至少上传一张现场照片` |
+| 超过 30 张 | `image_urls` 填 31 个 | 422 | `422` / `现场照片最多 30 张` |
+| 金额为负 | `"amount": -1` | 422 | `422` / `金额不能为负数` |
 | 重量为 0 | `"weight": 0` | 422 | `422` / `重量必须大于 0` |
-| 重量为负数 | `"weight": -1` | 422 | `422` |
 | 重量非数字 | `"weight": "abc"` | 422 | `422` / `重量必须为数字` |
 | 缺重量 | 去掉 `weight` | 422 | `422` / `请输入实际重量` |
 | 居民提交 | Header 用居民 token | 403 | `403` / `无权提交回收记录` |
@@ -397,12 +405,15 @@ pm.test("列表按创建时间倒序", () => {
       {
         "id": 4,
         "weight": 3.5,
+        "amount": 12.5,
+        "remark": "上门回收称重",
+        "image_urls": ["recycle-records/xxx.png", "recycle-records/yyy.png"],
+        "full_image_urls": [
+          "http://carelink.damon.com/storage/recycle-records/xxx.png",
+          "http://carelink.damon.com/storage/recycle-records/yyy.png"
+        ],
         "created_at": "2026-11-20 03:08:41",
         "date": "2026-11-20",
-        "clothes_image": "recycle-records/xxx.png",
-        "clothes_image_url": "http://carelink.damon.com/storage/recycle-records/xxx.png",
-        "scale_image": "recycle-records/yyy.png",
-        "scale_image_url": "http://carelink.damon.com/storage/recycle-records/yyy.png",
         "user": { "id": 10, "name": "张回收", "role": "recycler" }
       }
     ],
@@ -452,9 +463,8 @@ const json = pm.response.json();
 pm.test("200 且含完整信息", () => {
   pm.expect(json.code).to.eql(200);
   pm.expect(json.data).to.include.keys(
-    "id", "weight", "created_at",
-    "clothes_image", "clothes_image_url",
-    "scale_image", "scale_image_url", "user"
+    "id", "weight", "amount", "remark",
+    "image_urls", "full_image_urls", "created_at", "user"
   );
 });
 ```

@@ -37,9 +37,13 @@ class RecycleRecordController extends Controller
 
         $record = RecycleRecord::create([
             "user_id"       => $user->id,
-            "clothes_image" => $validated["clothes_image"],
-            "scale_image"   => $validated["scale_image"],
+            "image_urls"    => $validated["image_urls"],
             "weight"        => $validated["weight"],
+            "amount"        => $validated["amount"] ?? null,
+            "remark"        => $validated["remark"] ?? null,
+            // 旧字段兼容：前端若传则写入，不传为 null（向后兼容历史 App）
+            "clothes_image" => $validated["clothes_image"] ?? null,
+            "scale_image"   => $validated["scale_image"] ?? null,
         ]);
 
         // Spatie LogsActivity 会自动记录 created 事件
@@ -168,15 +172,20 @@ class RecycleRecordController extends Controller
     private function serializeRecord(RecycleRecord $record): array
     {
         return [
-            "id"               => $record->id,
-            "weight"           => (float) $record->weight,
-            "created_at"       => $record->created_at ? $record->created_at->format("Y-m-d H:i:s") : null,
-            "date"             => $record->created_at ? $record->created_at->format("Y-m-d") : null,
-            "clothes_image"    => $record->clothes_image,
-            "clothes_image_url"=> $record->clothes_image_url,
-            "scale_image"      => $record->scale_image,
-            "scale_image_url"  => $record->scale_image_url,
-            "user"             => $record->user ? [
+            "id"                => $record->id,
+            "weight"            => (float) $record->weight,
+            "amount"            => $record->amount !== null ? (float) $record->amount : null,
+            "remark"            => $record->remark,
+            "image_urls"        => is_array($record->image_urls) ? $record->image_urls : [],
+            "full_image_urls"   => $record->full_image_urls, // 全部图片完整 URL（含历史旧字段兼容）
+            "created_at"        => $record->created_at ? $record->created_at->format("Y-m-d H:i:s") : null,
+            "date"              => $record->created_at ? $record->created_at->format("Y-m-d") : null,
+            // 旧字段兼容：历史 App 仍可能读取
+            "clothes_image"     => $record->clothes_image,
+            "clothes_image_url" => $record->clothes_image_url,
+            "scale_image"       => $record->scale_image,
+            "scale_image_url"   => $record->scale_image_url,
+            "user"              => $record->user ? [
                 "id"   => $record->user->id,
                 "name" => $record->user->name,
                 "role" => $record->user->role,

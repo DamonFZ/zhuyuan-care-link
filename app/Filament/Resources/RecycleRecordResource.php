@@ -42,6 +42,9 @@ class RecycleRecordResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    /** 列表行内现场照片仅预览前 N 张，避免几十张图挤在一行 */
+    private const LIST_PREVIEW_COUNT = 2;
+
     public static function form(Form $form): Form
     {
         return $form
@@ -61,27 +64,33 @@ class RecycleRecordResource extends Resource
                             ->suffix("kg")
                             ->default(0)
                             ->required(),
+                        Forms\Components\TextInput::make("amount")
+                            ->label("金额")
+                            ->numeric()
+                            ->inputMode("decimal")
+                            ->suffix("元")
+                            ->minValue(0)
+                            ->placeholder("选填"),
+                        Forms\Components\Textarea::make("remark")
+                            ->label("备注")
+                            ->maxLength(500)
+                            ->rows(2)
+                            ->placeholder("选填，最多 500 字"),
                     ])->columns(2),
 
                 Forms\Components\Section::make("现场照片")
                     ->schema([
-                        Forms\Components\FileUpload::make("clothes_image")
-                            ->label("衣物照片")
+                        Forms\Components\FileUpload::make("image_urls")
+                            ->label("现场照片（最多 " . RecycleRecord::MAX_IMAGES . " 张）")
                             ->disk("public")
-                            ->directory("recycle/clothes")
+                            ->directory("recycle-records")
                             ->image()
-                            ->imageEditor()
+                            ->multiple()
+                            ->maxFiles(RecycleRecord::MAX_IMAGES)
                             ->maxSize(5120)
-                            ->columnSpan(1),
-                        Forms\Components\FileUpload::make("scale_image")
-                            ->label("秤重照片")
-                            ->disk("public")
-                            ->directory("recycle/scale")
-                            ->image()
-                            ->imageEditor()
-                            ->maxSize(5120)
-                            ->columnSpan(1),
-                    ])->columns(2),
+                            ->reorderable()
+                            ->columnSpanFull(),
+                    ]),
             ]);
     }
 
@@ -113,23 +122,8 @@ class RecycleRecordResource extends Resource
                         "operator" => "danger",
                         "recycler" => "info",
                         default    => "gray",
-                    }),
-                Tables\Columns\ImageColumn::make("clothes_image")
-                    ->label("衣物照片")
-                    ->disk("public")
-                    ->square()
-                    ->width(80)
-                    ->height(80)
-                    ->defaultImageUrl("data:image/svg+xml;charset=UTF-8," . rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="80" height="80" fill="%23f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%239ca3af" font-size="12">无图</text></svg>'))
-                    ->extraImgAttributes(["loading" => "lazy"]),
-                Tables\Columns\ImageColumn::make("scale_image")
-                    ->label("秤重照片")
-                    ->disk("public")
-                    ->square()
-                    ->width(80)
-                    ->height(80)
-                    ->defaultImageUrl("data:image/svg+xml;charset=UTF-8," . rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="80" height="80" fill="%23f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%239ca3af" font-size="12">无图</text></svg>'))
-                    ->extraImgAttributes(["loading" => "lazy"]),
+                    })
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make("weight")
                     ->label("重量")
                     ->numeric(2)
@@ -140,6 +134,31 @@ class RecycleRecordResource extends Resource
                             ->label("合计(kg)")
                             ->numeric(2)
                     ),
+                Tables\Columns\TextColumn::make("amount")
+                    ->label("金额")
+                    ->numeric(2)
+                    ->suffix(" 元")
+                    ->placeholder("-"),
+                Tables\Columns\TextColumn::make("remark")
+                    ->label("备注")
+                    ->limit(30)
+                    ->tooltip(fn ($state): string => $state ?? ""),
+                Tables\Columns\ImageColumn::make("image_preview")
+                    ->label("现场照片")
+                    ->disk("public")
+                    ->square()
+                    ->width(70)
+                    ->height(70)
+                    ->stacked()
+                    ->getStateUsing(
+                        fn (RecycleRecord $record): array => array_slice(
+                            $record->display_image_paths ?? [],
+                            0,
+                            self::LIST_PREVIEW_COUNT
+                        )
+                    )
+                    ->defaultImageUrl("data:image/svg+xml;charset=UTF-8," . rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" width="70" height="70"><rect width="70" height="70" fill="%23f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%239ca3af" font-size="10">无图</text></svg>'))
+                    ->extraImgAttributes(["loading" => "lazy"]),
                 Tables\Columns\TextColumn::make("created_at")
                     ->label("录入时间")
                     ->dateTime("Y-m-d H:i:s")
@@ -218,6 +237,15 @@ class RecycleRecordResource extends Resource
                             ->label("实际重量")
                             ->numeric(2)
                             ->suffix(" kg"),
+                        TextEntry::make("amount")
+                            ->label("金额")
+                            ->numeric(2)
+                            ->suffix(" 元")
+                            ->placeholder("-"),
+                        TextEntry::make("remark")
+                            ->label("备注")
+                            ->placeholder("-")
+                            ->columnSpanFull(),
                         TextEntry::make("created_at")
                             ->label("录入时间")
                             ->dateTime("Y-m-d H:i:s"),
@@ -225,21 +253,19 @@ class RecycleRecordResource extends Resource
 
                 Section::make("现场照片")
                     ->schema([
-                        ImageEntry::make("clothes_image")
-                            ->label("衣物照片")
+                        // display_image_paths 已合并 image_urls 与历史 clothes/scale，此处渲染全部图片
+                        ImageEntry::make("display_image_paths")
+                            ->label("现场照片")
                             ->disk("public")
-                            ->width(400)
-                            ->height(400)
-                            ->defaultImageUrl("data:image/svg+xml;charset=UTF-8," . rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect width="400" height="400" fill="%23f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%239ca3af" font-size="20">未上传衣物照片</text></svg>'))
-                            ->columnSpan(1),
-                        ImageEntry::make("scale_image")
-                            ->label("秤重照片")
-                            ->disk("public")
-                            ->width(400)
-                            ->height(400)
-                            ->defaultImageUrl("data:image/svg+xml;charset=UTF-8," . rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect width="400" height="400" fill="%23f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%239ca3af" font-size="20">未上传秤重照片</text></svg>'))
-                            ->columnSpan(1),
-                    ])->columns(2),
+                            ->width(280)
+                            ->height(280)
+                            ->defaultImageUrl("data:image/svg+xml;charset=UTF-8," . rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" width="280" height="280"><rect width="280" height="280" fill="%23f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%239ca3af" font-size="16">未上传照片</text></svg>'))
+                            ->extraImgAttributes([
+                                "onclick" => "window.open(this.src, '_blank')",
+                                "class"   => "cursor-zoom-in",
+                                "loading" => "lazy",
+                            ]),
+                    ]),
             ]);
     }
 
