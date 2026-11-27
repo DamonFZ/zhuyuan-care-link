@@ -130,27 +130,22 @@ class RecycleRecordResource extends Resource
                         default    => "gray",
                     })
                     ->toggleable(isToggledHiddenByDefault: true),
-                // 重量/金额支持列表页就地编辑（点击单元格直接改，失焦/回车即保存），
-                // 避免进入编辑页重新加载大量现场照片。单位上移到列标题，保持清晰。
-                Tables\Columns\TextInputColumn::make("weight")
-                    ->label("重量 (kg)")
-                    ->type("number")
-                    ->inputMode("decimal")
-                    ->step("0.01")
+                // 重量/金额为只读展示；修改请走行内「修改数值」弹窗（显式保存，避免误改、不重载图片）
+                Tables\Columns\TextColumn::make("weight")
+                    ->label("重量")
+                    ->numeric(2)
+                    ->suffix(" kg")
                     ->sortable()
-                    ->rules(["required", "numeric", "gt:0"])
                     ->summarize(
                         Sum::make()
                             ->label("合计(kg)")
                             ->numeric(2)
                     ),
-                Tables\Columns\TextInputColumn::make("amount")
-                    ->label("金额 (元)")
-                    ->type("number")
-                    ->inputMode("decimal")
-                    ->step("0.01")
+                Tables\Columns\TextColumn::make("amount")
+                    ->label("金额")
+                    ->numeric(2)
+                    ->suffix(" 元")
                     ->placeholder("-")
-                    ->rules(["nullable", "numeric", "min:0"])
                     ->summarize(
                         Sum::make()
                             ->label("合计(元)")
@@ -212,6 +207,40 @@ class RecycleRecordResource extends Resource
                     }),
             ])
             ->actions([
+                // 轻量修改：仅改重量/金额，弹窗内显式点「保存」才落库，避免误改且不重载现场照片
+                Tables\Actions\Action::make("quickEdit")
+                    ->label("修改数值")
+                    ->icon("heroicon-o-pencil-square")
+                    ->modalHeading("修改重量 / 金额")
+                    ->modalSubmitActionLabel("保存")
+                    ->fillForm(fn (RecycleRecord $record): array => [
+                        "weight" => $record->weight,
+                        "amount" => $record->amount,
+                    ])
+                    ->form([
+                        Forms\Components\TextInput::make("weight")
+                            ->label("重量")
+                            ->numeric()
+                            ->inputMode("decimal")
+                            ->suffix(" kg")
+                            ->required()
+                            ->rules(["gt:0"]),
+                        Forms\Components\TextInput::make("amount")
+                            ->label("金额")
+                            ->numeric()
+                            ->inputMode("decimal")
+                            ->suffix(" 元")
+                            ->minValue(0)
+                            ->placeholder("选填")
+                            ->rules(["nullable", "numeric", "min:0"]),
+                    ])
+                    ->action(function (array $data, RecycleRecord $record): void {
+                        $record->update([
+                            "weight" => $data["weight"],
+                            "amount" => $data["amount"] ?? null,
+                        ]);
+                    })
+                    ->successNotificationMessage("保存成功"),
                 Tables\Actions\ViewAction::make()->label("查看"),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
