@@ -144,7 +144,12 @@ class RecycleRecordResource extends Resource
                     ->label("金额")
                     ->numeric(2)
                     ->suffix(" 元")
-                    ->placeholder("-"),
+                    ->placeholder("-")
+                    ->summarize(
+                        Sum::make()
+                            ->label("合计(元)")
+                            ->numeric(2)
+                    ),
                 Tables\Columns\TextColumn::make("remark")
                     ->label("备注")
                     ->limit(30)
