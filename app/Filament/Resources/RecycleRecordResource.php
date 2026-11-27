@@ -93,7 +93,7 @@ class RecycleRecordResource extends Resource
                             ->image()
                             ->multiple()
                             ->maxFiles(RecycleRecord::MAX_IMAGES)
-                            ->maxSize(5120)
+                            ->maxSize(10240) // 单张最大 10MB
                             ->reorderable()
                             ->columnSpanFull(),
                     ]),
