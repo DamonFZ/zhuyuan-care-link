@@ -130,21 +130,27 @@ class RecycleRecordResource extends Resource
                         default    => "gray",
                     })
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make("weight")
-                    ->label("重量")
-                    ->numeric(2)
-                    ->suffix(" kg")
+                // 重量/金额支持列表页就地编辑（点击单元格直接改，失焦/回车即保存），
+                // 避免进入编辑页重新加载大量现场照片。单位上移到列标题，保持清晰。
+                Tables\Columns\TextInputColumn::make("weight")
+                    ->label("重量 (kg)")
+                    ->type("number")
+                    ->inputMode("decimal")
+                    ->step("0.01")
                     ->sortable()
+                    ->rules(["required", "numeric", "gt:0"])
                     ->summarize(
                         Sum::make()
                             ->label("合计(kg)")
                             ->numeric(2)
                     ),
-                Tables\Columns\TextColumn::make("amount")
-                    ->label("金额")
-                    ->numeric(2)
-                    ->suffix(" 元")
+                Tables\Columns\TextInputColumn::make("amount")
+                    ->label("金额 (元)")
+                    ->type("number")
+                    ->inputMode("decimal")
+                    ->step("0.01")
                     ->placeholder("-")
+                    ->rules(["nullable", "numeric", "min:0"])
                     ->summarize(
                         Sum::make()
                             ->label("合计(元)")
